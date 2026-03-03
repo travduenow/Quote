@@ -46,15 +46,20 @@ export const PAY_LABELS: Record<string, string> = {
   standalone: 'Stand-Alone',
 }
 
-// Season deadline — update annually
-export const DEADLINE = new Date(2026, 3, 1) // April 1, 2026
+// Season deadline — auto-rolls to next year if current deadline has passed
+function getSeasonDeadline(): Date {
+  const now = new Date()
+  const thisYear = new Date(now.getFullYear(), 3, 1) // April 1 this year
+  return now < thisYear ? thisYear : new Date(now.getFullYear() + 1, 3, 1)
+}
+export const DEADLINE = getSeasonDeadline()
 
 export const LOT_OPTIONS = [
-  { value: 'eighth', label: '1/8 Acre', sub: 'Starting at $55/wk' },
-  { value: 'quarter', label: '1/4 Acre', sub: 'Starting at $75/wk' },
-  { value: 'half', label: '1/2 Acre', sub: 'Starting at $105/wk' },
-  { value: 'threequarter', label: '3/4 Acre', sub: 'Starting at $120/wk' },
-  { value: 'acre', label: '1 Acre', sub: 'Starting at $140/wk' },
+  { value: 'eighth', label: '1/8 Acre', sub: 'Starting at $63/wk' },
+  { value: 'quarter', label: '1/4 Acre', sub: 'Starting at $76/wk' },
+  { value: 'half', label: '1/2 Acre', sub: 'Starting at $96/wk' },
+  { value: 'threequarter', label: '3/4 Acre', sub: 'Starting at $112/wk' },
+  { value: 'acre', label: '1 Acre', sub: 'Starting at $128/wk' },
 ]
 
 export const ADDON_OPTIONS = [

@@ -62,8 +62,10 @@ export function QuoteCard() {
       })
 
       if (!res.ok) throw new Error("Send failed")
-    } catch {
-      // Silently unlock even if formspree fails (REPLACE_ME)
+    } catch (err) {
+      console.error("Email gate submission failed:", err)
+      // Still unlock quote but warn user their info may not have been received
+      setGateError("Your quote is ready below, but we may not have received your info. Please double-check your email or call 763-280-1694.")
     }
 
     setGateSending(false)
@@ -193,14 +195,17 @@ export function QuoteCard() {
   nextDeadline.setFullYear(nextDeadline.getFullYear() + 1)
   const nextStr = nextDeadline.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
 
-  // Switch & save calculation
+  // Switch & save calculation — compare current SA total to what the same
+  // services would cost on a subscription (mowing + priced add-ons)
   let switchSaving = 0
   if (d.useSA && !d.deadlinePassed) {
-    const subBase = SUB_MOWING[d.lot] * WEEKS
-    const subAfterDisc = subBase * (1 - SUB_DISC_RATE)
-    const feeMultiplier = d.pay === "card" ? (1 + CARD_FEE_RATE) : 1
-    const subWithFee = subAfterDisc * feeMultiplier
-    switchSaving = d.total - subWithFee
+    const subMowTotal = SUB_MOWING[d.lot] * WEEKS
+    const subSubtotal = subMowTotal + d.aosTotal
+    const subDiscount = subSubtotal * SUB_DISC_RATE
+    const subAfterDisc = subSubtotal - subDiscount
+    const subCardFee = d.pay === "card" ? subAfterDisc * CARD_FEE_RATE : 0
+    const subTotal = subAfterDisc + subCardFee
+    switchSaving = d.total - subTotal
   }
 
   return (

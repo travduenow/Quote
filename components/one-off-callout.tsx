@@ -1,5 +1,3 @@
-"use client"
-
 import { Phone, Wrench } from "lucide-react"
 
 export function OneOffCallout() {

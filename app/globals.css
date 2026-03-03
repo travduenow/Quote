@@ -48,8 +48,8 @@
 }
 
 @theme inline {
-  --font-sans: 'Barlow', sans-serif;
-  --font-serif: 'Bebas Neue', sans-serif;
+  --font-sans: var(--font-barlow), 'Barlow', sans-serif;
+  --font-serif: var(--font-bebas), 'Bebas Neue', sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

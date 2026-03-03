@@ -1,5 +1,3 @@
-"use client"
-
 import { Phone, Globe } from "lucide-react"
 
 export function Topbar() {

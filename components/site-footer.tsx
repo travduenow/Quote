@@ -1,5 +1,3 @@
-"use client"
-
 import { Phone, Globe } from "lucide-react"
 
 export function SiteFooter() {
@@ -53,7 +51,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="max-w-[1100px] mx-auto mt-5 flex justify-between flex-wrap gap-2 text-[0.78em] text-white/40">
-        <span>&copy; 2026 True North Enterprises MN. All rights reserved.</span>
+        <span>&copy; {new Date().getFullYear()} True North Enterprises MN. All rights reserved.</span>
         <span>BookTrueNorth.com &middot; 763-280-1694</span>
       </div>
     </footer>

@@ -36,26 +36,32 @@ export function QuoteCalculator() {
             1. Select Your Lot Size
           </label>
           <div className="grid grid-cols-3 gap-[9px] max-md:grid-cols-2 max-sm:grid-cols-1">
-            {LOT_OPTIONS.map((opt) => (
-              <label key={opt.value} className="relative cursor-pointer">
-                <input
-                  type="radio"
-                  name="lotSize"
-                  value={opt.value}
-                  checked={lotSize === opt.value}
-                  onChange={() => { setLotSize(opt.value); }}
-                  className="absolute opacity-0 pointer-events-none peer"
-                />
-                <div className="px-2 py-[13px] text-center border-2 border-tn-border rounded-lg bg-tn-cream transition-all hover:border-tn-lime hover:bg-[#f0f8e8] peer-checked:border-tn-gold peer-checked:bg-tn-forest">
-                  <span className="block font-serif text-[1.1em] tracking-[1.5px] text-tn-forest transition-colors peer-checked:text-tn-gold">
-                    <span className="peer-checked:text-tn-gold">{opt.label}</span>
+            {LOT_OPTIONS.map((opt) => {
+              const isSelected = lotSize === opt.value
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setLotSize(opt.value)}
+                  className={`px-2 py-[13px] text-center border-2 rounded-lg transition-all cursor-pointer ${
+                    isSelected
+                      ? "border-tn-gold bg-tn-forest"
+                      : "border-tn-border bg-tn-cream hover:border-tn-lime hover:bg-[#f0f8e8]"
+                  }`}
+                >
+                  <span className={`block font-serif text-[1.1em] tracking-[1.5px] transition-colors ${
+                    isSelected ? "text-tn-gold" : "text-tn-forest"
+                  }`}>
+                    {opt.label}
                   </span>
-                  <span className="block text-[0.68em] font-bold text-tn-lgray mt-px transition-colors">
+                  <span className={`block text-[0.68em] font-bold mt-px transition-colors ${
+                    isSelected ? "text-white/60" : "text-tn-lgray"
+                  }`}>
                     {opt.sub}
                   </span>
-                </div>
-              </label>
-            ))}
+                </button>
+              )
+            })}
           </div>
         </div>
 
@@ -78,9 +84,8 @@ export function QuoteCalculator() {
                   <input
                     type="checkbox"
                     checked={!!addons[ao.id]}
-                    onChange={() => toggleAddon(ao.id)}
-                    className="w-[17px] h-[17px] mt-0.5 shrink-0 cursor-pointer accent-tn-field"
-                    onClick={(e) => e.stopPropagation()}
+                    readOnly
+                    className="w-[17px] h-[17px] mt-0.5 shrink-0 cursor-pointer accent-tn-field pointer-events-none"
                   />
                   <div>
                     <div className="font-bold text-[0.9em] text-tn-charcoal">
@@ -152,29 +157,29 @@ export function QuoteCalculator() {
               { value: "card", icon: "💳", name: "Card", desc: "Billed weekly\n+3% service fee" },
               { value: "cash", icon: "💵", name: "Cash", desc: "Paid in full\nupfront · no fee" },
               { value: "standalone", icon: "📋", name: "Stand-Alone", desc: "One-off service\nno commitment" },
-            ].map((opt) => (
-              <div key={opt.value} className="relative">
-                <input
-                  type="radio"
-                  name="payMethod"
-                  id={`pay-${opt.value}`}
-                  value={opt.value}
-                  checked={payMethod === opt.value}
-                  onChange={() => { setPayMethod(opt.value); }}
-                  className="absolute opacity-0 pointer-events-none peer"
-                />
-                <label
-                  htmlFor={`pay-${opt.value}`}
-                  className="block text-center px-2 py-[14px] border-2 border-tn-border rounded-lg bg-tn-cream cursor-pointer transition-all hover:border-tn-lime peer-checked:bg-tn-forest peer-checked:border-tn-forest peer-checked:text-tn-gold"
+            ].map((opt) => {
+              const isSelected = payMethod === opt.value
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setPayMethod(opt.value)}
+                  className={`text-center px-2 py-[14px] border-2 rounded-lg cursor-pointer transition-all ${
+                    isSelected
+                      ? "bg-tn-forest border-tn-forest text-tn-gold"
+                      : "bg-tn-cream border-tn-border hover:border-tn-lime"
+                  }`}
                 >
                   <span className="text-[1.5em] block mb-1">{opt.icon}</span>
-                  <span className="block font-serif text-base tracking-[1px]">{opt.name}</span>
-                  <span className="block text-[0.68em] font-semibold text-tn-lgray mt-px tracking-wide leading-[1.3] whitespace-pre-line peer-checked:text-white/60">
+                  <span className={`block font-serif text-base tracking-[1px] ${isSelected ? "text-tn-gold" : "text-tn-charcoal"}`}>{opt.name}</span>
+                  <span className={`block text-[0.68em] font-semibold mt-px tracking-wide leading-[1.3] whitespace-pre-line ${
+                    isSelected ? "text-white/60" : "text-tn-lgray"
+                  }`}>
                     {opt.desc}
                   </span>
-                </label>
-              </div>
-            ))}
+                </button>
+              )
+            })}
           </div>
         </div>
 

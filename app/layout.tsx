@@ -3,8 +3,8 @@ import { Bebas_Neue, Barlow } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const _bebasNeue = Bebas_Neue({ weight: '400', subsets: ['latin'], variable: '--font-bebas' })
-const _barlow = Barlow({
+const bebasNeue = Bebas_Neue({ weight: '400', subsets: ['latin'], variable: '--font-bebas' })
+const barlow = Barlow({
   weight: ['300', '400', '600', '700', '900'],
   style: ['normal', 'italic'],
   subsets: ['latin'],
@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${barlow.variable} ${bebasNeue.variable}`}>
       <body className="font-sans antialiased overflow-x-hidden leading-relaxed">
         {children}
         <Analytics />

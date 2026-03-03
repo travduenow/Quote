@@ -1,5 +1,3 @@
-"use client"
-
 import { Phone } from "lucide-react"
 
 export function Hero() {
