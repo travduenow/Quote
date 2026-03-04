@@ -2,117 +2,92 @@
 
 import { Check, X } from "lucide-react"
 
-interface ComparisonItem {
-  feature: string
-  compass: boolean | string
-  individual: boolean | string
-}
-
-const comparisonData: ComparisonItem[] = [
-  { feature: "Weekly Mowing", compass: true, individual: true },
-  { feature: "Spring Cleanup Included", compass: true, individual: false },
-  { feature: "Fall Cleanup Included", compass: true, individual: false },
-  { feature: "1 Stick Edging Included", compass: true, individual: false },
-  { feature: "Discounted Rate", compass: true, individual: false },
-  { feature: "Flexible Scheduling", compass: "Season-long", individual: "On-demand" },
-  { feature: "No Commitment Required", compass: false, individual: true },
-  { feature: "Pay Per Service", compass: false, individual: true },
-  { feature: "Add-On Services Available", compass: true, individual: true },
-]
-
 export function ComparisonView() {
   const scrollToCalculator = () => {
     document.getElementById("calculator")?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
 
   return (
-    <section className="bg-tn-cream py-16 px-6">
+    <section className="bg-tn-cream py-10 px-4">
       <div className="max-w-[900px] mx-auto">
-        <div className="text-center mb-2">
-          <span className="text-[0.75em] font-black tracking-[4px] uppercase text-tn-field">
+        <div className="text-center mb-6">
+          <h2 className="font-serif text-[clamp(1.4em,3vw,2em)] tracking-[2px] uppercase text-tn-forest mb-1">
             Compare Options
-          </span>
+          </h2>
+          <p className="text-tn-gray text-[0.85em]">Choose what fits your needs</p>
         </div>
-        <h2 className="text-center font-serif text-[clamp(1.8em,4vw,2.8em)] tracking-[3px] uppercase text-tn-forest mb-2 text-balance">
-          Compass Care vs Individual Services
-        </h2>
-        <p className="text-center text-tn-gray text-[0.95em] mb-10">
-          Choose the option that fits your needs best
-        </p>
 
-        <div className="bg-tn-white rounded-xl shadow-[var(--shadow-md)] overflow-hidden">
-          {/* Header */}
-          <div className="grid grid-cols-[1fr_140px_140px] max-sm:grid-cols-[1fr_100px_100px] border-b-2 border-tn-forest">
-            <div className="p-4 bg-tn-forest" />
-            <div className="p-4 bg-tn-forest text-center">
-              <div className="font-serif text-[1.1em] max-sm:text-[0.9em] tracking-[1px] text-tn-gold uppercase">
-                Compass Care
-              </div>
-              <div className="text-[0.7em] text-white/60 mt-0.5">30-Week Season</div>
+        <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
+          {/* Compass Care Card */}
+          <div className="bg-tn-white rounded-xl shadow-[var(--shadow-sm)] overflow-hidden border-2 border-tn-forest">
+            <div className="bg-tn-forest px-4 py-3 text-center">
+              <div className="font-serif text-[1.1em] tracking-[1px] text-tn-gold uppercase">Compass Care</div>
+              <div className="text-[0.7em] text-white/60">30-Week Season</div>
             </div>
-            <div className="p-4 bg-tn-charcoal text-center">
-              <div className="font-serif text-[1.1em] max-sm:text-[0.9em] tracking-[1px] text-tn-white uppercase">
-                Individual
-              </div>
-              <div className="text-[0.7em] text-white/60 mt-0.5">On-Demand</div>
-            </div>
-          </div>
-
-          {/* Rows */}
-          {comparisonData.map((item, index) => (
-            <div
-              key={item.feature}
-              className={`grid grid-cols-[1fr_140px_140px] max-sm:grid-cols-[1fr_100px_100px] ${
-                index !== comparisonData.length - 1 ? "border-b border-tn-stone" : ""
-              }`}
-            >
-              <div className="p-4 text-[0.9em] max-sm:text-[0.8em] text-tn-charcoal font-medium">
-                {item.feature}
-              </div>
-              <div className="p-4 flex items-center justify-center bg-[#f8fdf0]">
-                {typeof item.compass === "boolean" ? (
-                  item.compass ? (
-                    <Check className="w-5 h-5 text-tn-field" />
-                  ) : (
-                    <X className="w-5 h-5 text-tn-lgray" />
-                  )
-                ) : (
-                  <span className="text-[0.8em] max-sm:text-[0.7em] text-tn-field font-semibold text-center">
-                    {item.compass}
-                  </span>
-                )}
-              </div>
-              <div className="p-4 flex items-center justify-center">
-                {typeof item.individual === "boolean" ? (
-                  item.individual ? (
-                    <Check className="w-5 h-5 text-tn-field" />
-                  ) : (
-                    <X className="w-5 h-5 text-tn-lgray" />
-                  )
-                ) : (
-                  <span className="text-[0.8em] max-sm:text-[0.7em] text-tn-charcoal font-semibold text-center">
-                    {item.individual}
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-
-          {/* CTA Row */}
-          <div className="grid grid-cols-[1fr_140px_140px] max-sm:grid-cols-[1fr_100px_100px] border-t-2 border-tn-stone bg-tn-cream">
-            <div className="p-4" />
-            <div className="p-4 flex items-center justify-center">
+            <div className="px-4 py-4">
+              <ul className="space-y-2 text-[0.85em]">
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-tn-field shrink-0" />
+                  <span className="text-tn-charcoal">Weekly mowing included</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-tn-field shrink-0" />
+                  <span className="text-tn-charcoal">Spring + Fall cleanup free</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-tn-field shrink-0" />
+                  <span className="text-tn-charcoal">1 stick edging included</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-tn-field shrink-0" />
+                  <span className="text-tn-charcoal">Discounted rate</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <X className="w-4 h-4 text-tn-lgray shrink-0" />
+                  <span className="text-tn-lgray">Season commitment</span>
+                </li>
+              </ul>
               <button
                 onClick={scrollToCalculator}
-                className="bg-tn-forest text-tn-gold font-bold text-[0.75em] max-sm:text-[0.65em] tracking-[1px] uppercase px-3 py-2 rounded border-none cursor-pointer transition-all hover:bg-tn-green"
+                className="w-full mt-4 bg-tn-forest text-tn-gold font-bold text-[0.8em] tracking-[1px] uppercase px-4 py-2 rounded border-none cursor-pointer transition-all hover:bg-tn-green"
               >
                 Get Quote
               </button>
             </div>
-            <div className="p-4 flex items-center justify-center">
+          </div>
+
+          {/* Individual Services Card */}
+          <div className="bg-tn-white rounded-xl shadow-[var(--shadow-sm)] overflow-hidden border-2 border-tn-border">
+            <div className="bg-tn-charcoal px-4 py-3 text-center">
+              <div className="font-serif text-[1.1em] tracking-[1px] text-tn-white uppercase">Individual</div>
+              <div className="text-[0.7em] text-white/60">On-Demand</div>
+            </div>
+            <div className="px-4 py-4">
+              <ul className="space-y-2 text-[0.85em]">
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-tn-field shrink-0" />
+                  <span className="text-tn-charcoal">Pay per service</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-tn-field shrink-0" />
+                  <span className="text-tn-charcoal">No commitment</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-tn-field shrink-0" />
+                  <span className="text-tn-charcoal">Flexible scheduling</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <X className="w-4 h-4 text-tn-lgray shrink-0" />
+                  <span className="text-tn-lgray">No seasonal discounts</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <X className="w-4 h-4 text-tn-lgray shrink-0" />
+                  <span className="text-tn-lgray">No free cleanups</span>
+                </li>
+              </ul>
               <button
                 onClick={scrollToCalculator}
-                className="bg-tn-charcoal text-white font-bold text-[0.75em] max-sm:text-[0.65em] tracking-[1px] uppercase px-3 py-2 rounded border-none cursor-pointer transition-all hover:bg-tn-gray"
+                className="w-full mt-4 bg-tn-charcoal text-white font-bold text-[0.8em] tracking-[1px] uppercase px-4 py-2 rounded border-none cursor-pointer transition-all hover:bg-tn-gray"
               >
                 Get Quote
               </button>

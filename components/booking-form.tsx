@@ -27,8 +27,7 @@ export function BookingForm() {
   const [state, setState] = useState("MN")
   const [zip, setZip] = useState("")
   const [notes, setNotes] = useState("")
-  const [startDate, setStartDate] = useState("")
-  const [contactPref, setContactPref] = useState(gateContactPref)
+  const [contactPref, setContactPref] = useState(gateContactPref || "phone")
   const [terms, setTerms] = useState(false)
   const [sending, setSending] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -55,19 +54,17 @@ export function BookingForm() {
     if (!phone.trim() || phone.replace(/\D/g, "").length < 7) inv.add("phone")
     if (!address.trim()) inv.add("address")
     if (!city.trim()) inv.add("city")
-    if (!state.trim()) inv.add("state")
     if (!zip.trim() || !/^\d{5}$/.test(zip)) inv.add("zip")
     if (!quoteSummary) inv.add("quote")
-    if (!contactPref) inv.add("contactPref")
     if (!terms) inv.add("terms")
 
     setInvalidFields(inv)
 
     if (inv.size > 0) {
       if (inv.has("quote")) {
-        setErrMsg("Please use the quote calculator above to build your quote before booking.")
+        setErrMsg("Please use the quote calculator above to build your quote first.")
       } else {
-        setErrMsg("Please fill in all required fields, enter a valid phone number and email, select a contact preference, and agree to the terms.")
+        setErrMsg("Please fill in all required fields and agree to the terms.")
       }
       return
     }
@@ -83,13 +80,9 @@ export function BookingForm() {
           from_email: email.trim(),
           phone: phone.trim(),
           address: [address.trim(), city.trim(), state.trim(), zip.trim()].join(", "),
-          city: city.trim(),
-          state: state.trim(),
-          zip: zip.trim(),
           quote_summary: quoteSummary,
           contact_pref: contactPref,
           message: notes.trim() || "No additional notes.",
-          start_date: startDate || "Not specified",
           referral: gateReferral || "Not specified",
           quote_date: new Date().toLocaleString("en-US"),
           website: "BookTrueNorth.com",
@@ -101,151 +94,125 @@ export function BookingForm() {
       setSuccess(true)
     } catch (err) {
       setSending(false)
-      setErrMsg(`Send failed: ${err instanceof Error ? err.message : "Unknown error"}. Please try again or call 763-280-1694.`)
+      setErrMsg(`Send failed. Please try again or call 763-280-1694.`)
     }
   }
 
   const inputCls = (field: string) =>
-    `w-full px-[14px] py-3 border-2 rounded-[7px] font-sans text-[0.93em] text-tn-charcoal bg-tn-white transition-colors focus:outline-none focus:border-tn-lime focus:shadow-[0_0_0_3px_rgba(140,184,58,0.15)] ${
+    `w-full px-3 py-2.5 border-2 rounded-lg font-sans text-[0.9em] text-tn-charcoal bg-tn-white transition-colors focus:outline-none focus:border-tn-lime ${
       invalidFields.has(field) ? "border-tn-error" : "border-tn-border"
     }`
-
-  const today = new Date()
-  const minDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`
 
   if (success) {
     const deadlineActive = !isAfterDeadline()
     return (
-      <div className="px-8 py-12 text-center bg-gradient-to-br from-[#edf8d8] to-[#d4f0a8] rounded-b-xl">
-        <div className="text-[3.5em] mb-4">✅</div>
-        <h3 className="font-serif text-[2.2em] tracking-[2px] text-tn-forest mb-2">{"You're"} All Set!</h3>
-        <p className="text-tn-gray text-base mb-7">Your booking request was received. {"Here's"} what to expect:</p>
-
-        <div className="flex flex-col max-w-[380px] mx-auto mb-7 text-left">
-          {[
-            { icon: "📬", title: "Confirmation email on its way", text: "Check your inbox (and spam folder) for a summary of your request." },
-            { icon: "📞", title: "We'll reach out within 24 hours", text: "A team member will contact you at your preferred method to confirm your schedule and details." },
-            { icon: "🗓️", title: "Your season gets locked in", text: "Once confirmed, your recurring schedule is set — no need to call each week." },
-          ].map((step, i) => (
-            <div key={i} className="flex items-start gap-[14px] py-[14px] border-b border-tn-forest/15 last:border-b-0">
-              <div className="shrink-0 w-[38px] h-[38px] bg-tn-forest text-tn-white rounded-full flex items-center justify-center text-[1.1em] mt-px">
-                {step.icon}
-              </div>
-              <div>
-                <strong className="block font-sans font-bold text-[0.95em] text-tn-forest mb-0.5">{step.title}</strong>
-                <span className="text-[0.85em] text-tn-gray leading-[1.4]">{step.text}</span>
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className="px-6 py-8 text-center bg-gradient-to-br from-[#edf8d8] to-[#d4f0a8] rounded-xl">
+        <div className="text-[2.5em] mb-3">Done!</div>
+        <h3 className="font-serif text-[1.8em] tracking-[2px] text-tn-forest mb-2">Request Received</h3>
+        <p className="text-tn-gray text-[0.9em] mb-5">We will contact you within 24 hours to confirm your schedule.</p>
 
         {deadlineActive && (
-          <p className="font-black text-tn-forest text-base mt-[14px] mb-4">
-            📅 Sign up by April 1 to lock in your 5% Compass Care discount!
+          <p className="font-bold text-tn-forest text-[0.9em] mb-4">
+            Sign up by April 1 for your discounted rate!
           </p>
         )}
 
-        <div className="flex flex-wrap gap-[10px] justify-center mt-[22px]">
+        <div className="flex flex-wrap gap-2 justify-center">
           <a
             href="tel:7632801694"
-            className="inline-flex items-center gap-[7px] bg-tn-gold text-tn-white font-serif text-[1.05em] tracking-[2px] px-[22px] py-[11px] rounded-lg no-underline shadow-[0_3px_10px_rgba(239,162,67,0.35)] hover:bg-tn-gold-dark transition-colors"
+            className="inline-flex items-center gap-2 bg-tn-gold text-tn-forest font-bold text-[0.9em] px-5 py-2 rounded-lg no-underline"
           >
-            <Phone className="w-4 h-4" /> Call 763-280-1694
+            <Phone className="w-4 h-4" /> Call Us
           </a>
           <button
-            onClick={() => document.getElementById("calculator")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-            className="inline-flex items-center gap-[7px] bg-transparent border-2 border-tn-forest text-tn-forest font-serif text-[1.05em] tracking-[2px] px-[22px] py-[11px] rounded-lg cursor-pointer hover:bg-tn-forest hover:text-tn-white transition-all"
+            onClick={() => document.getElementById("calculator")?.scrollIntoView({ behavior: "smooth" })}
+            className="inline-flex items-center gap-2 bg-transparent border-2 border-tn-forest text-tn-forest font-bold text-[0.9em] px-5 py-2 rounded-lg cursor-pointer"
           >
             <RotateCcw className="w-4 h-4" /> New Quote
           </button>
         </div>
-
-        <p className="mt-4 text-[0.8em] text-tn-lgray">
-          BookTrueNorth.com &middot; True North Enterprises MN
-        </p>
       </div>
     )
   }
 
   return (
     <div ref={formRef} className="relative">
-      {/* Sending overlay */}
       {sending && (
-        <div className="absolute inset-0 bg-white/90 rounded-xl z-10 flex items-center justify-center flex-col gap-[14px]">
-          <div className="w-[42px] h-[42px] border-4 border-tn-stone border-t-tn-forest rounded-full animate-spin-custom" />
-          <div className="font-serif text-[1.2em] tracking-[2px] text-tn-forest">Sending Your Request...</div>
+        <div className="absolute inset-0 bg-white/90 rounded-xl z-10 flex items-center justify-center flex-col gap-3">
+          <div className="w-10 h-10 border-4 border-tn-stone border-t-tn-forest rounded-full animate-spin-custom" />
+          <div className="font-serif text-[1.1em] tracking-[1px] text-tn-forest">Sending...</div>
         </div>
       )}
 
-      <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2 gap-[18px] mb-[18px] max-sm:grid-cols-1">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Name row */}
+        <div className="grid grid-cols-2 gap-3 max-sm:grid-cols-1">
           <div>
-            <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">First Name *</label>
+            <label className="block text-[0.7em] font-bold tracking-[1px] uppercase text-tn-forest mb-1">First Name *</label>
             <input type="text" value={fname} onChange={(e) => setFname(e.target.value)} placeholder="John" className={inputCls("fname")} />
           </div>
           <div>
-            <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Last Name *</label>
+            <label className="block text-[0.7em] font-bold tracking-[1px] uppercase text-tn-forest mb-1">Last Name *</label>
             <input type="text" value={lname} onChange={(e) => setLname(e.target.value)} placeholder="Doe" className={inputCls("lname")} />
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-[18px] mb-[18px] max-sm:grid-cols-1">
+        {/* Contact row */}
+        <div className="grid grid-cols-2 gap-3 max-sm:grid-cols-1">
           <div>
-            <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Email Address *</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="jane@email.com" className={inputCls("email")} />
+            <label className="block text-[0.7em] font-bold tracking-[1px] uppercase text-tn-forest mb-1">Email *</label>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" className={inputCls("email")} />
           </div>
           <div>
-            <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Phone Number *</label>
+            <label className="block text-[0.7em] font-bold tracking-[1px] uppercase text-tn-forest mb-1">Phone *</label>
             <input type="tel" value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} placeholder="(763) 123-4567" maxLength={14} className={inputCls("phone")} />
           </div>
         </div>
 
-        <div className="mb-[18px]">
-          <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Street Address *</label>
+        {/* Address */}
+        <div>
+          <label className="block text-[0.7em] font-bold tracking-[1px] uppercase text-tn-forest mb-1">Street Address *</label>
           <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="123 Main Street" className={inputCls("address")} />
         </div>
 
-        <div className="grid grid-cols-[2fr_1fr_1fr] gap-[18px] mb-[18px] max-sm:grid-cols-1">
+        {/* City/State/Zip row */}
+        <div className="grid grid-cols-[2fr_80px_100px] gap-3 max-sm:grid-cols-1">
           <div>
-            <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">City *</label>
+            <label className="block text-[0.7em] font-bold tracking-[1px] uppercase text-tn-forest mb-1">City *</label>
             <input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Minneapolis" className={inputCls("city")} />
           </div>
           <div>
-            <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">State *</label>
+            <label className="block text-[0.7em] font-bold tracking-[1px] uppercase text-tn-forest mb-1">State</label>
             <input type="text" value={state} onChange={(e) => setState(e.target.value.toUpperCase())} maxLength={2} className={inputCls("state")} />
           </div>
           <div>
-            <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">ZIP Code *</label>
+            <label className="block text-[0.7em] font-bold tracking-[1px] uppercase text-tn-forest mb-1">ZIP *</label>
             <input type="text" value={zip} onChange={(e) => setZip(e.target.value)} placeholder="55401" maxLength={5} inputMode="numeric" className={inputCls("zip")} />
           </div>
         </div>
 
-        {useSA && (
-          <div className="mb-[18px]">
-            <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Preferred Start Date</label>
-            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} min={minDate} className={inputCls("startDate")} />
-          </div>
-        )}
-
-        <div className="mb-[18px]">
-          <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Additional Notes</label>
+        {/* Notes */}
+        <div>
+          <label className="block text-[0.7em] font-bold tracking-[1px] uppercase text-tn-forest mb-1">Notes (optional)</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Anything we should know about your property, access, pets, timing preferences, etc.?"
-            className="w-full px-[14px] py-3 border-2 border-tn-border rounded-[7px] font-sans text-[0.93em] text-tn-charcoal bg-tn-white focus:outline-none focus:border-tn-lime focus:shadow-[0_0_0_3px_rgba(140,184,58,0.15)] resize-y min-h-[88px]"
+            placeholder="Access info, pets, preferences..."
+            rows={2}
+            className="w-full px-3 py-2.5 border-2 border-tn-border rounded-lg font-sans text-[0.9em] text-tn-charcoal bg-tn-white focus:outline-none focus:border-tn-lime resize-y"
           />
         </div>
 
-        <div className="mb-[18px]">
-          <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Preferred Contact Method *</label>
-          <div className="flex gap-[18px] flex-wrap mt-[6px]">
+        {/* Contact preference - compact inline */}
+        <div>
+          <label className="block text-[0.7em] font-bold tracking-[1px] uppercase text-tn-forest mb-1">Best way to reach you</label>
+          <div className="flex gap-4 flex-wrap">
             {[
-              { value: "phone", label: "📞 Phone Call" },
-              { value: "text", label: "💬 Text Message" },
-              { value: "email", label: "📧 Email" },
+              { value: "phone", label: "Phone" },
+              { value: "text", label: "Text" },
+              { value: "email", label: "Email" },
             ].map((opt) => (
-              <label key={opt.value} className="flex items-center gap-2 text-[0.88em] cursor-pointer">
+              <label key={opt.value} className="flex items-center gap-1.5 text-[0.85em] cursor-pointer">
                 <input
                   type="radio"
                   name="contactPref"
@@ -260,20 +227,19 @@ export function BookingForm() {
           </div>
         </div>
 
-        <div className="mb-0">
-          <label className="flex items-start gap-[10px] bg-tn-cream rounded-[7px] p-[14px] text-[0.83em] text-tn-gray cursor-pointer">
-            <input
-              type="checkbox"
-              checked={terms}
-              onChange={(e) => setTerms(e.target.checked)}
-              className="accent-tn-field mt-0.5 shrink-0"
-            />
-            I agree to be contacted by True North Outdoor Services / True North Enterprises MN regarding my quote and scheduling. This form is a request only and is not a final binding contract.
-          </label>
-        </div>
+        {/* Terms checkbox */}
+        <label className="flex items-start gap-2 bg-tn-cream rounded-lg p-3 text-[0.8em] text-tn-gray cursor-pointer">
+          <input
+            type="checkbox"
+            checked={terms}
+            onChange={(e) => setTerms(e.target.checked)}
+            className="accent-tn-field mt-0.5 shrink-0"
+          />
+          I agree to be contacted by True North Outdoor Services regarding my quote. This is a request only, not a binding contract.
+        </label>
 
         {errMsg && (
-          <div className="bg-[#fff0f0] border-2 border-tn-error rounded-[7px] px-4 py-3 mt-3 text-[0.83em] text-tn-error font-semibold leading-relaxed">
+          <div className="bg-[#fff0f0] border border-tn-error rounded-lg px-3 py-2 text-[0.8em] text-tn-error font-semibold">
             {errMsg}
           </div>
         )}
@@ -281,9 +247,9 @@ export function BookingForm() {
         <button
           type="submit"
           disabled={sending}
-          className="w-full mt-[22px] bg-gradient-to-br from-tn-forest to-tn-field text-tn-white border-none cursor-pointer font-serif text-[1.4em] tracking-[3px] uppercase py-[18px] rounded-lg transition-all hover:translate-y-[-2px] hover:shadow-[0_8px_28px_rgba(26,61,10,0.4)] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+          className="w-full bg-gradient-to-br from-tn-forest to-tn-field text-tn-white border-none cursor-pointer font-serif text-[1.2em] tracking-[2px] uppercase py-4 rounded-lg transition-all hover:translate-y-[-1px] hover:shadow-[0_6px_20px_rgba(26,61,10,0.35)] disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          Submit My Booking Request
+          Submit Booking Request
         </button>
       </form>
     </div>
