@@ -8,10 +8,11 @@ import { Printer } from "lucide-react"
 import { LeadCapture } from "@/components/lead-capture"
 
 export function QuoteCard() {
-  const { quoteData, setPayMethod, calcQuote, serviceType } = useQuote()
+  const { quoteData, setPayMethod, calcQuote, serviceType, lotSize } = useQuote()
 
   const d = quoteData
   const isIndividual = serviceType === "individual"
+  const isCustomQuote = lotSize === "acreplus"
 
   function scrollToBooking() {
     document.getElementById("booking")?.scrollIntoView({ behavior: "smooth", block: "start" })
@@ -33,7 +34,7 @@ export function QuoteCard() {
   // Switch & save calculation — compare current SA total to what the same
   // services would cost on a subscription (mowing + priced add-ons)
   let switchSaving = 0
-  if (d.useSA && !d.deadlinePassed) {
+  if (d.useSA && !d.deadlinePassed && !isCustomQuote && SUB_MOWING[d.lot]) {
     const subMowTotal = SUB_MOWING[d.lot] * WEEKS
     const subSubtotal = subMowTotal + d.aosTotal
     const subDiscount = subSubtotal * SUB_DISC_RATE
@@ -61,7 +62,7 @@ export function QuoteCard() {
           <div className="text-[0.68em] font-black tracking-[2.5px] uppercase text-tn-lgray pb-[6px] border-b border-tn-stone mb-2">
             {isIndividual ? "Selected Services" : d.isSub ? "Compass Care (30 Weeks)" : "Mowing Service"}
           </div>
-          {!isIndividual && (
+          {!isIndividual && !isCustomQuote && (
             <>
               <div className="flex justify-between items-start py-[5px] text-[0.87em]">
                 <span className="text-tn-gray">
@@ -79,6 +80,19 @@ export function QuoteCard() {
                 <span className="font-bold text-tn-charcoal">{fmt(d.mowingTotal)}</span>
               </div>
             </>
+          )}
+          {!isIndividual && isCustomQuote && (
+            <div className="flex justify-between items-center py-[5px] text-[0.87em]">
+              <span className="text-tn-gray">
+                Weekly Mowing (30 weeks)
+                {d.isSub && (
+                  <span className="block mt-1 text-[0.75em] text-tn-success font-bold tracking-wide leading-relaxed">
+                    Incl. Spring &amp; Fall Cleanup (1 each)<br />Incl. 1 Stick Edging Along Concrete
+                  </span>
+                )}
+              </span>
+              <span className="font-bold text-tn-gold-dark text-[0.85em]">Custom quote</span>
+            </div>
           )}
           {isIndividual && aoKeys.map((k) => (
             <div key={k} className="flex justify-between items-center py-[5px] text-[0.87em]">
@@ -163,26 +177,43 @@ export function QuoteCard() {
         {/* Total */}
         <div className="flex justify-between items-baseline border-t-[3px] border-tn-forest pt-[14px] mt-2">
           <span className="font-serif text-[1.3em] tracking-[2px] uppercase text-tn-forest">
-            {d.isSub ? "Season Total" : isIndividual ? "Estimated Total" : "Service Total"}
+            {isCustomQuote ? "Quote Status" : d.isSub ? "Season Total" : isIndividual ? "Estimated Total" : "Service Total"}
           </span>
-          <span className="font-serif text-[2.8em] text-tn-forest tracking-[1px] leading-none">
-            {fmt(d.total)}
-          </span>
+          {isCustomQuote ? (
+            <span className="font-serif text-[1.4em] text-tn-gold-dark tracking-[1px] leading-none">
+              Custom Quote Required
+            </span>
+          ) : (
+            <span className="font-serif text-[2.8em] text-tn-forest tracking-[1px] leading-none">
+              {fmt(d.total)}
+            </span>
+          )}
         </div>
 
         {/* Payment info box */}
-        <div className="bg-tn-forest rounded-lg px-[18px] py-[14px] text-center mt-[14px]">
-          <div className="text-[0.72em] font-bold tracking-[1.5px] uppercase text-white/60 mb-[3px]">
-            {d.isSub && d.pay === "card" ? "Weekly Card Payment (x30 weeks)" :
-             d.isSub && d.pay === "cash" ? "Cash - Paid in Full Upfront" :
-             d.pay === "card" ? "Card Payment" :
-             "Cash - Due at Service"}
+        {isCustomQuote ? (
+          <div className="bg-tn-gold rounded-lg px-[18px] py-[14px] text-center mt-[14px]">
+            <div className="text-[0.85em] font-bold text-tn-forest">
+              Properties over 1 acre require a custom quote.
+            </div>
+            <div className="text-[0.8em] text-tn-forest/80 mt-1">
+              Submit your request below and we will contact you with pricing.
+            </div>
           </div>
-          <div className="font-serif text-[2em] tracking-[2px] text-tn-gold">
-            {d.isSub && d.pay === "card" ? fmt(d.weeklyPayment ?? 0) + "/wk" :
-             fmt(d.total)}
+        ) : (
+          <div className="bg-tn-forest rounded-lg px-[18px] py-[14px] text-center mt-[14px]">
+            <div className="text-[0.72em] font-bold tracking-[1.5px] uppercase text-white/60 mb-[3px]">
+              {d.isSub && d.pay === "card" ? "Weekly Card Payment (x30 weeks)" :
+               d.isSub && d.pay === "cash" ? "Cash - Paid in Full Upfront" :
+               d.pay === "card" ? "Card Payment" :
+               "Cash - Due at Service"}
+            </div>
+            <div className="font-serif text-[2em] tracking-[2px] text-tn-gold">
+              {d.isSub && d.pay === "card" ? fmt(d.weeklyPayment ?? 0) + "/wk" :
+               fmt(d.total)}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Savings pill */}
         {d.discount > 0 && (

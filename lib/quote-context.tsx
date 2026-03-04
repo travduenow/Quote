@@ -77,13 +77,20 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
     let mowingTotal = 0
     let weeklyMow = 0
 
+    // Check if custom quote is needed (1+ acre)
+    const isCustomQuote = lotSize === "acreplus"
+
     // Handle Individual Services
     if (isIndividual) {
       // All services are selected directly via selectedServices
       if (selectedServices.mowing) {
-        weeklyMow = SA_MOWING[lotSize]
-        aos["Weekly Mowing (per visit)"] = weeklyMow
-        mowingTotal = weeklyMow
+        if (isCustomQuote) {
+          aos["Weekly Mowing (per visit)"] = null
+        } else {
+          weeklyMow = SA_MOWING[lotSize] || 0
+          aos["Weekly Mowing (per visit)"] = weeklyMow
+          mowingTotal = weeklyMow
+        }
       }
       if (selectedServices.spring) {
         aos["Spring Clean Up"] = null
@@ -133,8 +140,14 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
       }
     } else {
       // Compass Care subscription
-      weeklyMow = SUB_MOWING[lotSize]
-      mowingTotal = weeklyMow * WEEKS
+      if (isCustomQuote) {
+        weeklyMow = 0
+        mowingTotal = 0
+        aos["Weekly Mowing (30 weeks)"] = null
+      } else {
+        weeklyMow = SUB_MOWING[lotSize] || 0
+        mowingTotal = weeklyMow * WEEKS
+      }
 
       // Add-ons for Compass Care
       if (addons.overseeding) aos["Overseeding (Quote Requested)"] = null

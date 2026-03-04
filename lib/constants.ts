@@ -37,6 +37,7 @@ export const LOT_LABELS: Record<string, string> = {
   half: '1/2 Acre',
   threequarter: '3/4 Acre',
   acre: '1 Acre',
+  acreplus: '1+ Acre',
 }
 
 export const PAY_LABELS: Record<string, string> = {
@@ -59,6 +60,7 @@ export const LOT_OPTIONS = [
   { value: 'half', label: '1/2 Acre', sub: 'Large yard' },
   { value: 'threequarter', label: '3/4 Acre', sub: 'Extra large yard' },
   { value: 'acre', label: '1 Acre', sub: 'Estate size' },
+  { value: 'acreplus', label: '1+ Acre', sub: 'Custom quote required' },
 ]
 
 export const ADDON_OPTIONS = [

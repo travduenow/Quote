@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useQuote } from "@/lib/quote-context"
-import { LOT_OPTIONS, ADDON_OPTIONS } from "@/lib/constants"
+import { LOT_OPTIONS, ADDON_OPTIONS, SA_MOWING, AO_RATES, fmt } from "@/lib/constants"
 import { Check, ChevronRight, ChevronLeft, Compass, Calendar } from "lucide-react"
 
 interface IndividualService {
@@ -10,23 +10,44 @@ interface IndividualService {
   label: string
   desc: string
   hasInput?: "shrub" | "gutter" | "landscaping"
+  priceType: "mowing" | "shrub" | "gutter" | "dog" | "quote"
 }
 
 const INDIVIDUAL_SERVICES: IndividualService[] = [
-  { id: "mowing", label: "Weekly Mowing", desc: "Regular lawn mowing service" },
-  { id: "spring", label: "Spring Clean Up", desc: "Debris removal, bed cleanup, and lawn prep" },
-  { id: "fall", label: "Fall Clean Up", desc: "Leaf removal and winterization prep" },
-  { id: "overseeding", label: "Overseeding", desc: "Spreads fresh grass seed to fill in thin or bare spots and thicken your lawn." },
-  { id: "aeration", label: "Core Aeration", desc: "Pulls small plugs from the soil to reduce compaction and let water and nutrients reach the roots." },
-  { id: "dethatching", label: "Dethatching", desc: "Removes the layer of dead grass and debris that builds up and chokes healthy growth." },
-  { id: "weed", label: "Weed Control", desc: "Targeted treatment to eliminate weeds and keep your lawn looking clean all season." },
-  { id: "shrub", label: "Shrub Trimming", desc: "Shapes and trims shrubs and bushes to keep your landscaping neat and tidy.", hasInput: "shrub" },
-  { id: "gutter", label: "Gutter Clean-Out", desc: "Clears leaves and debris from gutters to prevent clogging and water damage. Single-story only.", hasInput: "gutter" },
-  { id: "dog", label: "Dog Waste Pickup", desc: "Weekly yard cleanup so you never have to deal with it." },
-  { id: "edging", label: "Edging", desc: "Clean, sharp lines along driveways, sidewalks, and beds for a polished finished look." },
-  { id: "landscaping", label: "General Landscaping", desc: "Mulching, planting, bed cleanup, and more.", hasInput: "landscaping" },
-  { id: "snow", label: "Snow Removal", desc: "Driveway and walkway clearing after snowfall." },
+  { id: "mowing", label: "Weekly Mowing", desc: "Regular lawn mowing service", priceType: "mowing" },
+  { id: "spring", label: "Spring Clean Up", desc: "Debris removal, bed cleanup, and lawn prep", priceType: "quote" },
+  { id: "fall", label: "Fall Clean Up", desc: "Leaf removal and winterization prep", priceType: "quote" },
+  { id: "overseeding", label: "Overseeding", desc: "Spreads fresh grass seed to fill in thin or bare spots and thicken your lawn.", priceType: "quote" },
+  { id: "aeration", label: "Core Aeration", desc: "Pulls small plugs from the soil to reduce compaction and let water and nutrients reach the roots.", priceType: "quote" },
+  { id: "dethatching", label: "Dethatching", desc: "Removes the layer of dead grass and debris that builds up and chokes healthy growth.", priceType: "quote" },
+  { id: "weed", label: "Weed Control", desc: "Targeted treatment to eliminate weeds and keep your lawn looking clean all season.", priceType: "quote" },
+  { id: "shrub", label: "Shrub Trimming", desc: "Shapes and trims shrubs and bushes to keep your landscaping neat and tidy.", hasInput: "shrub", priceType: "shrub" },
+  { id: "gutter", label: "Gutter Clean-Out", desc: "Clears leaves and debris from gutters to prevent clogging and water damage. Single-story only.", hasInput: "gutter", priceType: "gutter" },
+  { id: "dog", label: "Dog Waste Pickup", desc: "Weekly yard cleanup so you never have to deal with it.", priceType: "dog" },
+  { id: "edging", label: "Edging", desc: "Clean, sharp lines along driveways, sidewalks, and beds for a polished finished look.", priceType: "quote" },
+  { id: "landscaping", label: "General Landscaping", desc: "Mulching, planting, bed cleanup, and more.", hasInput: "landscaping", priceType: "quote" },
+  { id: "snow", label: "Snow Removal", desc: "Driveway and walkway clearing after snowfall.", priceType: "quote" },
 ]
+
+// Helper to get price display for individual services
+function getServicePrice(service: IndividualService, lotSize: string, shrubCount: number): string {
+  const isCustomLot = lotSize === "acreplus" || !lotSize
+  
+  switch (service.priceType) {
+    case "mowing":
+      if (isCustomLot || !SA_MOWING[lotSize]) return "Based on lot size"
+      return `${fmt(SA_MOWING[lotSize])}/visit`
+    case "shrub":
+      return `${fmt(AO_RATES.shrub)}/shrub`
+    case "gutter":
+      return `${fmt(AO_RATES.gutter)} (single-story)`
+    case "dog":
+      return `${fmt(AO_RATES.dog)}/visit`
+    case "quote":
+    default:
+      return "Quote required"
+  }
+}
 
 export function StepWizard() {
   const {
@@ -329,7 +350,7 @@ export function StepWizard() {
               Which services do you need?
             </h3>
             <p className="text-tn-gray text-[0.9em] mb-6 text-center">
-              Select one or more services
+              Select one or more services - prices shown after selecting property size
             </p>
 
             <div className="flex flex-col gap-3 max-w-[600px] mx-auto max-h-[400px] overflow-y-auto pr-2">
@@ -355,13 +376,22 @@ export function StepWizard() {
                         {isSelected && <Check className="w-4 h-4 text-tn-forest" />}
                       </div>
                       <div className="flex-1">
-                        <span
-                          className={`block font-serif text-[1.1em] tracking-[1px] ${
-                            isSelected ? "text-tn-gold" : "text-tn-forest"
-                          }`}
-                        >
-                          {service.label}
-                        </span>
+                        <div className="flex items-center justify-between">
+                          <span
+                            className={`font-serif text-[1.1em] tracking-[1px] ${
+                              isSelected ? "text-tn-gold" : "text-tn-forest"
+                            }`}
+                          >
+                            {service.label}
+                          </span>
+                          <span
+                            className={`text-[0.8em] font-semibold ${
+                              isSelected ? "text-tn-gold/80" : "text-tn-field"
+                            }`}
+                          >
+                            {getServicePrice(service, lotSize, shrubCount)}
+                          </span>
+                        </div>
                         <span
                           className={`block text-[0.8em] mt-0.5 ${
                             isSelected ? "text-white/60" : "text-tn-lgray"
@@ -369,7 +399,6 @@ export function StepWizard() {
                         >
                           {service.desc}
                         </span>
-
                       </div>
                     </div>
 
