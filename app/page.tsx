@@ -2,6 +2,7 @@ import { Topbar } from "@/components/topbar"
 import { Hero } from "@/components/hero"
 import { DeadlineBanner } from "@/components/deadline-banner"
 import { OneOffCallout } from "@/components/one-off-callout"
+import { ComparisonView } from "@/components/comparison-view"
 import { SiteFooter } from "@/components/site-footer"
 import { CalculatorSection } from "@/components/calculator-section"
 
@@ -12,6 +13,7 @@ export default function HomePage() {
       <Hero />
       <DeadlineBanner />
       <OneOffCallout />
+      <ComparisonView />
       <CalculatorSection />
       <SiteFooter />
     </>

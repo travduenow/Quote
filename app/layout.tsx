@@ -14,11 +14,11 @@ const barlow = Barlow({
 export const metadata: Metadata = {
   title: 'Compass Care Subscription | True North Outdoor Services | BookTrueNorth.com',
   description:
-    'Get an instant quote for lawn mowing, cleanup, and outdoor services in the Twin Cities. Compass Care subscription — 30-week season, 5% off, cleanups included.',
+    'Get an instant quote for lawn mowing, cleanup, and outdoor services in the Twin Cities. Compass Care subscription — 30-week season, discounted rate, cleanups included.',
   openGraph: {
     title: 'Instant Lawn Care Quote | True North Outdoor Services',
     description:
-      '30-week Compass Care subscription or stand-alone service. Lock in your season price — sign up by April 1 and save 5%.',
+      '30-week Compass Care subscription or individual services. Lock in your season price — sign up by April 1 for a discounted rate.',
     type: 'website',
     url: 'https://booktruenorth.com',
   },

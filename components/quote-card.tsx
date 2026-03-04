@@ -5,6 +5,7 @@ import {
   fmt, SUB_MOWING, WEEKS, SUB_DISC_RATE, DEADLINE,
 } from "@/lib/constants"
 import { Printer } from "lucide-react"
+import { LeadCapture } from "@/components/lead-capture"
 
 export function QuoteCard() {
   const { quoteData, setPayMethod, calcQuote, serviceType } = useQuote()
@@ -191,6 +192,9 @@ export function QuoteCard() {
             </span>
           </div>
         )}
+
+        {/* Lead Capture */}
+        <LeadCapture />
 
         {/* Book CTA */}
         <button
