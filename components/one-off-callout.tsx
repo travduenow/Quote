@@ -13,7 +13,7 @@ export function OneOffCallout() {
               {"Don't need a full season? No problem."}
             </div>
             <div className="text-[0.85em] text-tn-gray mt-0.5">
-              We offer <strong>one-off &amp; on-demand services</strong> — mowing, cleanup, aeration, dethatching, and more, booked whenever you need them. Just select <strong>Stand-Alone</strong> in the calculator below or call us directly.
+              We offer <strong>individual services</strong> — mowing, cleanup, aeration, dethatching, and more, booked whenever you need them. Just select <strong>Individual Services</strong> in the calculator below or call us directly.
             </div>
           </div>
         </div>

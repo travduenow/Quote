@@ -36,8 +36,7 @@ export function DeadlineBanner() {
 
   return (
     <div className="bg-gradient-to-r from-tn-gold-dark via-tn-gold to-tn-gold-dark px-5 py-[13px] text-center font-black text-[0.9em] tracking-wide text-tn-forest relative overflow-hidden">
-      <span className="animate-blink">🗓️</span>{" "}
-      <strong>SIGN UP BY APRIL 1 — Lock in 5% off &amp; add-ons included.</strong>{" "}
+      <strong>SIGN UP BY APRIL 1 — Discounted rate + extra add-ons available.</strong>{" "}
       <span className="font-serif text-[1.3em] tracking-[2px] ml-2" suppressHydrationWarning>
         {countdown}
       </span>

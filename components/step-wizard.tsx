@@ -9,24 +9,23 @@ interface IndividualService {
   id: string
   label: string
   desc: string
-  price?: string
   hasInput?: "shrub" | "gutter" | "landscaping"
 }
 
 const INDIVIDUAL_SERVICES: IndividualService[] = [
-  { id: "mowing", label: "Weekly Mowing", desc: "Regular lawn mowing service", price: "Price based on lot size" },
-  { id: "spring", label: "Spring Clean Up", desc: "Debris removal, bed cleanup, and lawn prep", price: "Quote requested" },
-  { id: "fall", label: "Fall Clean Up", desc: "Leaf removal and winterization prep", price: "Quote requested" },
-  { id: "overseeding", label: "Overseeding", desc: "Spreads fresh grass seed to fill in thin or bare spots and thicken your lawn.", price: "Quote requested" },
-  { id: "aeration", label: "Core Aeration", desc: "Pulls small plugs from the soil to reduce compaction and let water and nutrients reach the roots.", price: "Quote requested" },
-  { id: "dethatching", label: "Dethatching", desc: "Removes the layer of dead grass and debris that builds up and chokes healthy growth.", price: "Quote requested" },
-  { id: "weed", label: "Weed Control", desc: "Targeted treatment to eliminate weeds and keep your lawn looking clean all season.", price: "Quote requested" },
-  { id: "shrub", label: "Shrub Trimming", desc: "Shapes and trims shrubs and bushes to keep your landscaping neat and tidy.", price: "$26 per shrub", hasInput: "shrub" },
-  { id: "gutter", label: "Gutter Clean-Out", desc: "Clears leaves and debris from gutters to prevent clogging and water damage.", price: "$155 (single-story only)", hasInput: "gutter" },
-  { id: "dog", label: "Dog Waste Pickup", desc: "Weekly yard cleanup so you never have to deal with it.", price: "$15 per visit" },
-  { id: "edging", label: "Edging", desc: "Clean, sharp lines along driveways, sidewalks, and beds for a polished finished look.", price: "Quote requested" },
-  { id: "landscaping", label: "General Landscaping", desc: "Mulching, planting, bed cleanup, and more.", price: "Quote requested", hasInput: "landscaping" },
-  { id: "snow", label: "Snow Removal", desc: "Driveway and walkway clearing after snowfall.", price: "Quote requested" },
+  { id: "mowing", label: "Weekly Mowing", desc: "Regular lawn mowing service" },
+  { id: "spring", label: "Spring Clean Up", desc: "Debris removal, bed cleanup, and lawn prep" },
+  { id: "fall", label: "Fall Clean Up", desc: "Leaf removal and winterization prep" },
+  { id: "overseeding", label: "Overseeding", desc: "Spreads fresh grass seed to fill in thin or bare spots and thicken your lawn." },
+  { id: "aeration", label: "Core Aeration", desc: "Pulls small plugs from the soil to reduce compaction and let water and nutrients reach the roots." },
+  { id: "dethatching", label: "Dethatching", desc: "Removes the layer of dead grass and debris that builds up and chokes healthy growth." },
+  { id: "weed", label: "Weed Control", desc: "Targeted treatment to eliminate weeds and keep your lawn looking clean all season." },
+  { id: "shrub", label: "Shrub Trimming", desc: "Shapes and trims shrubs and bushes to keep your landscaping neat and tidy.", hasInput: "shrub" },
+  { id: "gutter", label: "Gutter Clean-Out", desc: "Clears leaves and debris from gutters to prevent clogging and water damage. Single-story only.", hasInput: "gutter" },
+  { id: "dog", label: "Dog Waste Pickup", desc: "Weekly yard cleanup so you never have to deal with it." },
+  { id: "edging", label: "Edging", desc: "Clean, sharp lines along driveways, sidewalks, and beds for a polished finished look." },
+  { id: "landscaping", label: "General Landscaping", desc: "Mulching, planting, bed cleanup, and more.", hasInput: "landscaping" },
+  { id: "snow", label: "Snow Removal", desc: "Driveway and walkway clearing after snowfall." },
 ]
 
 export function StepWizard() {
@@ -211,8 +210,8 @@ export function StepWizard() {
                   <ul className={`mt-2 space-y-1 ${serviceType === "compass" ? "text-white/70" : "text-tn-lgray"}`}>
                     <li>Weekly mowing all season</li>
                     <li>Spring + Fall cleanup included</li>
-                    <li>2 Edging visits included</li>
-                    <li>5% subscription discount</li>
+                    <li>1 Stick edging included</li>
+                    <li>Discounted subscription rate</li>
                   </ul>
                 </div>
                 {serviceType === "compass" && (
@@ -370,15 +369,7 @@ export function StepWizard() {
                         >
                           {service.desc}
                         </span>
-                        {service.price && (
-                          <span
-                            className={`block text-[0.75em] mt-1 font-semibold ${
-                              isSelected ? "text-tn-gold/80" : "text-tn-field"
-                            }`}
-                          >
-                            {service.price}
-                          </span>
-                        )}
+
                       </div>
                     </div>
 
@@ -473,17 +464,6 @@ export function StepWizard() {
                       </div>
                       <div className="text-[0.75em] text-tn-lgray mt-0.5 leading-[1.4]">
                         {ao.desc}
-                      </div>
-                      <div
-                        className={`text-[0.78em] mt-1 ${
-                          ao.eligible
-                            ? "text-tn-field font-bold"
-                            : ao.snowSub
-                            ? "text-[#2980b9] font-bold"
-                            : "text-tn-lgray"
-                        }`}
-                      >
-                        {ao.price}
                       </div>
                     </div>
                   </div>

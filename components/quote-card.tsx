@@ -67,7 +67,7 @@ export function QuoteCard() {
                   Weekly Mowing Rate
                   {d.isSub && (
                     <span className="block mt-1 text-[0.75em] text-tn-success font-bold tracking-wide leading-relaxed">
-                      Incl. Spring &amp; Fall Cleanup (1 each)<br />Incl. 2 Edging Visits
+                      Incl. Spring &amp; Fall Cleanup (1 each)<br />Incl. 1 Stick Edging Along Concrete
                     </span>
                   )}
                 </span>
@@ -117,7 +117,7 @@ export function QuoteCard() {
           </div>
           {d.discount > 0 && (
             <div className="flex justify-between items-center py-[5px] text-[0.87em]">
-              <span className="text-tn-gray">🏷️ 5% Compass Care Discount</span>
+              <span className="text-tn-gray">Compass Care Discount</span>
               <span className="font-bold text-tn-success">-{fmt(d.discount)}</span>
             </div>
           )}
@@ -127,7 +127,7 @@ export function QuoteCard() {
         {/* Badges */}
         {d.discount > 0 && (
           <div className="bg-gradient-to-br from-[#e8f8d0] to-[#d0f0a0] border border-tn-lime rounded-md px-[14px] py-[10px] text-[0.8em] font-bold text-tn-forest text-center my-3">
-            🎉 {"You're"} saving <strong>{fmt(d.discount)}</strong> with the Compass Care 5% subscription discount!
+            {"You're"} saving <strong>{fmt(d.discount)}</strong> with your Compass Care subscription discount!
           </div>
         )}
 
@@ -138,7 +138,7 @@ export function QuoteCard() {
             </div>
             {switchSaving > 0 && (
               <div className="mt-2 bg-gradient-to-br from-[#edf8d8] to-[#d4f0a8] border-[1.5px] border-tn-lime rounded-lg px-[14px] py-[11px] text-[0.83em] text-tn-forest">
-                <strong>Switch to Compass Care and save {fmt(switchSaving)} this season</strong> - plus get Spring &amp; Fall Cleanup and 2 Edging visits included free.
+                <strong>Switch to Compass Care for a discounted rate</strong> - plus get Spring &amp; Fall Cleanup and 1 Stick Edging included free.
                 <br />
                 <button
                   onClick={() => { setPayMethod("card"); setTimeout(calcQuote, 50); }}
@@ -187,7 +187,7 @@ export function QuoteCard() {
         {d.discount > 0 && (
           <div className="text-center mt-[10px]">
             <span className="inline-block bg-tn-lime text-tn-forest font-black text-[0.78em] px-[14px] py-[5px] rounded-full tracking-wide">
-              Saving {fmt(d.discount)} with Compass Care!
+              Discounted rate applied!
             </span>
           </div>
         )}

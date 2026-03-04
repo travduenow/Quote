@@ -54,24 +54,24 @@ function getSeasonDeadline(): Date {
 export const DEADLINE = getSeasonDeadline()
 
 export const LOT_OPTIONS = [
-  { value: 'eighth', label: '1/8 Acre', sub: 'Starting at $65/wk' },
-  { value: 'quarter', label: '1/4 Acre', sub: 'Starting at $78/wk' },
-  { value: 'half', label: '1/2 Acre', sub: 'Starting at $99/wk' },
-  { value: 'threequarter', label: '3/4 Acre', sub: 'Starting at $115/wk' },
-  { value: 'acre', label: '1 Acre', sub: 'Starting at $132/wk' },
+  { value: 'eighth', label: '1/8 Acre', sub: 'Small yard' },
+  { value: 'quarter', label: '1/4 Acre', sub: 'Average yard' },
+  { value: 'half', label: '1/2 Acre', sub: 'Large yard' },
+  { value: 'threequarter', label: '3/4 Acre', sub: 'Extra large yard' },
+  { value: 'acre', label: '1 Acre', sub: 'Estate size' },
 ]
 
 export const ADDON_OPTIONS = [
-  { id: 'overseeding', label: 'Overseeding', icon: '🌱', desc: 'Spreads fresh grass seed to fill in thin or bare spots and thicken your lawn.', price: 'Request a quote', eligible: true },
-  { id: 'aeration', label: 'Core Aeration', icon: '🔄', desc: 'Pulls small plugs from the soil to reduce compaction and let water and nutrients reach the roots.', price: 'Request a quote', eligible: true },
-  { id: 'dethatching', label: 'Dethatching', icon: '🪚', desc: 'Removes the layer of dead grass and debris that builds up and chokes healthy growth.', price: 'Request a quote', eligible: true },
-  { id: 'weed', label: 'Weed Control', icon: '🌿', desc: 'Targeted treatment to eliminate weeds and keep your lawn looking clean all season.', price: 'Request a quote', eligible: true },
-  { id: 'shrub', label: 'Shrub Trimming', icon: '✂️', desc: 'Shapes and trims shrubs and bushes to keep your landscaping neat and tidy.', price: '$26 per shrub', hasSub: true },
-  { id: 'gutter', label: 'Gutter Clean-Out', icon: '🍂', desc: 'Clears leaves and debris from gutters to prevent clogging and water damage. Single-story only.', price: '$155 flat fee (single-story homes only)', hasSub: true },
-  { id: 'dog', label: 'Dog Waste Pickup', icon: '🐾', desc: 'Weekly yard cleanup so you never have to deal with it — we handle it every visit.', price: '$15/week x 30 weeks (1 dog)', eligible: true },
-  { id: 'edging', label: 'Edging', icon: '📐', desc: 'Clean, sharp lines along driveways, sidewalks, and beds for a polished finished look.', price: 'Request a quote', eligible: true },
-  { id: 'landscaping', label: 'General Landscaping', icon: '🌳', desc: 'Mulching, planting, bed cleanup, and more — tell us what you need and we\'ll quote it.', price: 'Request a quote', hasSub: true },
-  { id: 'snow', label: 'Snow Removal', icon: '❄️', desc: 'Driveway and walkway clearing after snowfall — reliable service all winter long.', price: 'Request a quote', snowSub: true },
+  { id: 'overseeding', label: 'Overseeding', icon: '🌱', desc: 'Spreads fresh grass seed to fill in thin or bare spots and thicken your lawn.', eligible: true },
+  { id: 'aeration', label: 'Core Aeration', icon: '🔄', desc: 'Pulls small plugs from the soil to reduce compaction and let water and nutrients reach the roots.', eligible: true },
+  { id: 'dethatching', label: 'Dethatching', icon: '🪚', desc: 'Removes the layer of dead grass and debris that builds up and chokes healthy growth.', eligible: true },
+  { id: 'weed', label: 'Weed Control', icon: '🌿', desc: 'Targeted treatment to eliminate weeds and keep your lawn looking clean all season.', eligible: true },
+  { id: 'shrub', label: 'Shrub Trimming', icon: '✂️', desc: 'Shapes and trims shrubs and bushes to keep your landscaping neat and tidy.', hasSub: true },
+  { id: 'gutter', label: 'Gutter Clean-Out', icon: '🍂', desc: 'Clears leaves and debris from gutters to prevent clogging and water damage. Single-story only.', hasSub: true },
+  { id: 'dog', label: 'Dog Waste Pickup', icon: '🐾', desc: 'Weekly yard cleanup so you never have to deal with it.', eligible: true },
+  { id: 'edging', label: 'Edging', icon: '📐', desc: 'Clean, sharp lines along driveways, sidewalks, and beds for a polished finished look.', eligible: true },
+  { id: 'landscaping', label: 'General Landscaping', icon: '🌳', desc: 'Mulching, planting, bed cleanup, and more.', hasSub: true },
+  { id: 'snow', label: 'Snow Removal', icon: '❄️', desc: 'Driveway and walkway clearing after snowfall.', snowSub: true },
 ]
 
 export const REFERRAL_OPTIONS = [
