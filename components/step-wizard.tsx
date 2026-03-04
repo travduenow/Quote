@@ -31,13 +31,13 @@ export function StepWizard() {
   // Dynamic steps based on service type
   const getStepLabels = () => {
     if (serviceType === "individual") {
-      return ["Service Type", "Select Services", "Property Size", "Payment"]
+      return ["Service Type", "Select Services", "Property Size", "Add-Ons", "Payment"]
     }
     return ["Service Type", "Property Size", "Add-Ons", "Payment"]
   }
 
   const stepLabels = getStepLabels()
-  const totalSteps = 4
+  const totalSteps = serviceType === "individual" ? 5 : 4
 
   const toggleService = (id: string) => {
     setSelectedServices({ ...selectedServices, [id]: !selectedServices[id] })
@@ -46,20 +46,23 @@ export function StepWizard() {
   const hasSelectedServices = Object.values(selectedServices).some(v => v)
 
   const canProceed = () => {
-    switch (step) {
-      case 1: return serviceType !== null
-      case 2: 
-        if (serviceType === "individual") {
-          return hasSelectedServices
-        }
-        return lotSize !== ""
-      case 3: 
-        if (serviceType === "individual") {
-          return lotSize !== ""
-        }
-        return true // Add-ons are optional for Compass Care
-      case 4: return payMethod !== ""
-      default: return false
+    if (serviceType === "individual") {
+      switch (step) {
+        case 1: return serviceType !== null
+        case 2: return hasSelectedServices
+        case 3: return lotSize !== ""
+        case 4: return true // Add-ons are optional
+        case 5: return payMethod !== ""
+        default: return false
+      }
+    } else {
+      switch (step) {
+        case 1: return serviceType !== null
+        case 2: return lotSize !== ""
+        case 3: return true // Add-ons are optional
+        case 4: return payMethod !== ""
+        default: return false
+      }
     }
   }
 
@@ -513,8 +516,106 @@ export function StepWizard() {
           </div>
         )}
 
-        {/* Step 4: Payment */}
-        {step === 4 && (
+        {/* Step 4: Add-Ons (Individual Services) */}
+        {step === 4 && serviceType === "individual" && (
+          <div className="animate-fade-up">
+            <h3 className="font-serif text-[1.4em] tracking-[1.5px] text-tn-forest mb-2 text-center">
+              Any additional services?
+            </h3>
+            <p className="text-tn-gray text-[0.9em] mb-6 text-center">
+              These are optional - skip if you just need the basics
+            </p>
+
+            <div className="flex flex-col gap-2 max-w-[600px] mx-auto max-h-[350px] overflow-y-auto pr-2">
+              {ADDON_OPTIONS.map((ao) => (
+                <div key={ao.id}>
+                  <div
+                    className={`flex items-start gap-3 px-4 py-3 rounded-lg border-2 cursor-pointer select-none transition-all ${
+                      addons[ao.id]
+                        ? "border-tn-field bg-[#edf7dd]"
+                        : "border-tn-border bg-tn-cream hover:border-tn-lime hover:bg-[#f3fae8]"
+                    }`}
+                    onClick={() => toggleAddon(ao.id)}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={!!addons[ao.id]}
+                      readOnly
+                      className="w-[18px] h-[18px] mt-0.5 shrink-0 cursor-pointer accent-tn-field pointer-events-none"
+                    />
+                    <div className="flex-1">
+                      <div className="font-bold text-[0.9em] text-tn-charcoal">
+                        {ao.icon} {ao.label}
+                      </div>
+                      <div className="text-[0.75em] text-tn-lgray mt-0.5 leading-[1.4]">
+                        {ao.desc}
+                      </div>
+                      <div
+                        className={`text-[0.78em] mt-1 ${
+                          ao.eligible
+                            ? "text-tn-field font-bold"
+                            : ao.snowSub
+                            ? "text-[#2980b9] font-bold"
+                            : "text-tn-lgray"
+                        }`}
+                      >
+                        {ao.price}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Sub-inputs */}
+                  {ao.id === "shrub" && addons.shrub && (
+                    <div className="mt-2 ml-8">
+                      <div className="flex items-center gap-3">
+                        <label className="text-[0.85em] text-tn-gray">Number of shrubs:</label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={50}
+                          value={shrubCount}
+                          onChange={(e) => setShrubCount(Math.max(1, parseInt(e.target.value) || 1))}
+                          className="w-20 px-3 py-2 border-2 border-tn-border rounded-md font-sans text-[0.9em] focus:outline-none focus:border-tn-lime"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {ao.id === "gutter" && addons.gutter && (
+                    <div className="mt-2 ml-8">
+                      <label className="flex items-center gap-2 px-3 py-2 bg-[#fffce8] border border-tn-gold rounded-md text-[0.85em] text-tn-charcoal cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={singleStory}
+                          onChange={(e) => setSingleStory(e.target.checked)}
+                          className="accent-tn-gold-dark cursor-pointer"
+                        />
+                        I confirm my home is single-story
+                      </label>
+                    </div>
+                  )}
+
+                  {ao.id === "landscaping" && addons.landscaping && (
+                    <div className="mt-2 ml-8">
+                      <label className="text-[0.85em] text-tn-gray">Describe what you need:</label>
+                      <textarea
+                        value={landscapingNote}
+                        onChange={(e) => setLandscapingNote(e.target.value)}
+                        rows={2}
+                        maxLength={200}
+                        placeholder="e.g. mulch beds, planting, trimming..."
+                        className="w-full px-3 py-2 border-2 border-tn-border rounded-md font-sans text-[0.86em] resize-y mt-1 focus:outline-none focus:border-tn-lime"
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Step 4: Payment (Compass Care) */}
+        {step === 4 && serviceType === "compass" && (
           <div className="animate-fade-up">
             <h3 className="font-serif text-[1.4em] tracking-[1.5px] text-tn-forest mb-2 text-center">
               How would you like to pay?
@@ -552,8 +653,6 @@ export function StepWizard() {
                       }`}
                     >
                       Billed weekly
-                      <br />
-                      +3% service fee
                     </span>
                     {payMethod === "card" && (
                       <div className="mt-2 inline-flex items-center gap-1 text-tn-gold text-[0.75em] font-bold">
@@ -586,8 +685,6 @@ export function StepWizard() {
                       }`}
                     >
                       Paid in full upfront
-                      <br />
-                      No fee
                     </span>
                     {payMethod === "cash" && (
                       <div className="mt-2 inline-flex items-center gap-1 text-tn-gold text-[0.75em] font-bold">
@@ -596,77 +693,85 @@ export function StepWizard() {
                     )}
                   </button>
                 </>
-              ) : (
-                <>
-                  {/* Individual Services - Card */}
-                  <button
-                    type="button"
-                    onClick={() => setPayMethod("card")}
-                    className={`text-center px-4 py-5 border-2 rounded-xl cursor-pointer transition-all ${
-                      payMethod === "card"
-                        ? "bg-tn-forest border-tn-gold"
-                        : "bg-tn-cream border-tn-border hover:border-tn-lime hover:bg-[#f0f8e8]"
-                    }`}
-                  >
-                    <span className="text-[2em] block mb-2">💳</span>
-                    <span
-                      className={`block font-serif text-[1.2em] tracking-[1px] ${
-                        payMethod === "card" ? "text-tn-gold" : "text-tn-forest"
-                      }`}
-                    >
-                      Card
-                    </span>
-                    <span
-                      className={`block text-[0.8em] mt-1 leading-relaxed ${
-                        payMethod === "card" ? "text-white/60" : "text-tn-lgray"
-                      }`}
-                    >
-                      Pay at service
-                      <br />
-                      +3% service fee
-                    </span>
-                    {payMethod === "card" && (
-                      <div className="mt-2 inline-flex items-center gap-1 text-tn-gold text-[0.75em] font-bold">
-                        <Check className="w-3 h-3" />
-                      </div>
-                    )}
-                  </button>
+              ) : null}
+            </div>
+          </div>
+        )}
 
-                  {/* Individual Services - Cash */}
-                  <button
-                    type="button"
-                    onClick={() => setPayMethod("standalone")}
-                    className={`text-center px-4 py-5 border-2 rounded-xl cursor-pointer transition-all ${
-                      payMethod === "standalone"
-                        ? "bg-tn-forest border-tn-gold"
-                        : "bg-tn-cream border-tn-border hover:border-tn-lime hover:bg-[#f0f8e8]"
-                    }`}
-                  >
-                    <span className="text-[2em] block mb-2">💵</span>
-                    <span
-                      className={`block font-serif text-[1.2em] tracking-[1px] ${
-                        payMethod === "standalone" ? "text-tn-gold" : "text-tn-forest"
-                      }`}
-                    >
-                      Cash
-                    </span>
-                    <span
-                      className={`block text-[0.8em] mt-1 leading-relaxed ${
-                        payMethod === "standalone" ? "text-white/60" : "text-tn-lgray"
-                      }`}
-                    >
-                      Pay at service
-                      <br />
-                      No fee
-                    </span>
-                    {payMethod === "standalone" && (
-                      <div className="mt-2 inline-flex items-center gap-1 text-tn-gold text-[0.75em] font-bold">
-                        <Check className="w-3 h-3" />
-                      </div>
-                    )}
-                  </button>
-                </>
-              )}
+        {/* Step 5: Payment (Individual Services) */}
+        {step === 5 && serviceType === "individual" && (
+          <div className="animate-fade-up">
+            <h3 className="font-serif text-[1.4em] tracking-[1.5px] text-tn-forest mb-2 text-center">
+              How would you like to pay?
+            </h3>
+            <p className="text-tn-gray text-[0.9em] mb-6 text-center">
+              Select how you would like to pay for your service
+            </p>
+
+            <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1 max-w-[500px] mx-auto">
+              {/* Individual Services - Card */}
+              <button
+                type="button"
+                onClick={() => setPayMethod("card")}
+                className={`text-center px-4 py-5 border-2 rounded-xl cursor-pointer transition-all ${
+                  payMethod === "card"
+                    ? "bg-tn-forest border-tn-gold"
+                    : "bg-tn-cream border-tn-border hover:border-tn-lime hover:bg-[#f0f8e8]"
+                }`}
+              >
+                <span className="text-[2em] block mb-2">💳</span>
+                <span
+                  className={`block font-serif text-[1.2em] tracking-[1px] ${
+                    payMethod === "card" ? "text-tn-gold" : "text-tn-forest"
+                  }`}
+                >
+                  Card
+                </span>
+                <span
+                  className={`block text-[0.8em] mt-1 leading-relaxed ${
+                    payMethod === "card" ? "text-white/60" : "text-tn-lgray"
+                  }`}
+                >
+                  Pay at service
+                </span>
+                {payMethod === "card" && (
+                  <div className="mt-2 inline-flex items-center gap-1 text-tn-gold text-[0.75em] font-bold">
+                    <Check className="w-3 h-3" />
+                  </div>
+                )}
+              </button>
+
+              {/* Individual Services - Cash */}
+              <button
+                type="button"
+                onClick={() => setPayMethod("standalone")}
+                className={`text-center px-4 py-5 border-2 rounded-xl cursor-pointer transition-all ${
+                  payMethod === "standalone"
+                    ? "bg-tn-forest border-tn-gold"
+                    : "bg-tn-cream border-tn-border hover:border-tn-lime hover:bg-[#f0f8e8]"
+                }`}
+              >
+                <span className="text-[2em] block mb-2">💵</span>
+                <span
+                  className={`block font-serif text-[1.2em] tracking-[1px] ${
+                    payMethod === "standalone" ? "text-tn-gold" : "text-tn-forest"
+                  }`}
+                >
+                  Cash
+                </span>
+                <span
+                  className={`block text-[0.8em] mt-1 leading-relaxed ${
+                    payMethod === "standalone" ? "text-white/60" : "text-tn-lgray"
+                  }`}
+                >
+                  Pay at service
+                </span>
+                {payMethod === "standalone" && (
+                  <div className="mt-2 inline-flex items-center gap-1 text-tn-gold text-[0.75em] font-bold">
+                    <Check className="w-3 h-3" />
+                  </div>
+                )}
+              </button>
             </div>
           </div>
         )}

@@ -2,9 +2,9 @@
 
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react"
 import {
-  WEEKS, CARD_FEE_RATE, SUB_DISC_RATE,
+  WEEKS, SUB_DISC_RATE,
   SUB_MOWING, SA_MOWING, AO_RATES,
-  LOT_LABELS, PAY_LABELS, fmt, isAfterDeadline,
+  fmt, isAfterDeadline,
   type QuoteData,
 } from "./constants"
 
@@ -90,6 +90,35 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
       if (selectedServices.fall) {
         aos["Fall Clean Up (Quote Requested)"] = null
       }
+      
+      // Add-ons for Individual Services
+      if (addons.overseeding) aos["Overseeding (Quote Requested)"] = null
+      if (addons.aeration) aos["Core Aeration (Quote Requested)"] = null
+      if (addons.dethatching) aos["Dethatching (Quote Requested)"] = null
+      if (addons.weed) aos["Weed Control (Quote Requested)"] = null
+
+      if (addons.shrub) {
+        const n = Math.max(1, shrubCount)
+        const c = AO_RATES.shrub * n
+        aos[`Shrub Trimming (${n} shrub${n !== 1 ? "s" : ""})`] = c
+        aosTotal += c
+      }
+
+      if (addons.gutter) {
+        if (singleStory) {
+          aos["Gutter Clean-Out"] = AO_RATES.gutter
+          aosTotal += AO_RATES.gutter
+        } else {
+          aos["Gutter Clean-Out (Confirm single-story to include)"] = null
+        }
+      }
+
+      if (addons.edging) aos["Edging (Quote Requested)"] = null
+      if (addons.landscaping) {
+        const note = landscapingNote.trim()
+        aos[`General Landscaping (Quote Requested)${note ? ": " + note : ""}`] = null
+      }
+      if (addons.snow) aos["Snow Removal (Quote Requested)"] = null
     } else {
       // Compass Care subscription
       weeklyMow = SUB_MOWING[lotSize]
@@ -134,14 +163,13 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
     const subtotal = mowingTotal + aosTotal
     const discount = isSub ? subtotal * SUB_DISC_RATE : 0
     const afterDisc = subtotal - discount
-    const cardFee = payMethod === "card" ? afterDisc * CARD_FEE_RATE : 0
-    const total = afterDisc + cardFee
+    const total = afterDisc
     const weeklyPayment = isSub ? total / WEEKS : null
 
     const data: QuoteData = {
       lot: lotSize, pay: payMethod, isSub, useSA, deadlinePassed,
       weeklyMow, mowingTotal, aos, aosTotal, subtotal, discount,
-      afterDisc, cardFee, total, weeklyPayment,
+      afterDisc, cardFee: 0, total, weeklyPayment,
     }
 
     setQuoteData(data)

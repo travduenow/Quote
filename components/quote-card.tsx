@@ -2,7 +2,7 @@
 
 import { useQuote } from "@/lib/quote-context"
 import {
-  fmt, SUB_MOWING, WEEKS, SUB_DISC_RATE, CARD_FEE_RATE, DEADLINE,
+  fmt, SUB_MOWING, WEEKS, SUB_DISC_RATE, DEADLINE,
 } from "@/lib/constants"
 import { Printer } from "lucide-react"
 
@@ -36,9 +36,7 @@ export function QuoteCard() {
     const subMowTotal = SUB_MOWING[d.lot] * WEEKS
     const subSubtotal = subMowTotal + d.aosTotal
     const subDiscount = subSubtotal * SUB_DISC_RATE
-    const subAfterDisc = subSubtotal - subDiscount
-    const subCardFee = d.pay === "card" ? subAfterDisc * CARD_FEE_RATE : 0
-    const subTotal = subAfterDisc + subCardFee
+    const subTotal = subSubtotal - subDiscount
     switchSaving = d.total - subTotal
   }
 
@@ -123,12 +121,7 @@ export function QuoteCard() {
               <span className="font-bold text-tn-success">-{fmt(d.discount)}</span>
             </div>
           )}
-          {d.cardFee > 0 && (
-            <div className="flex justify-between items-center py-[5px] text-[0.87em]">
-              <span className="text-tn-gray">💳 3% Card Service Fee</span>
-              <span className="font-bold text-tn-warning">+{fmt(d.cardFee)}</span>
-            </div>
-          )}
+
         </div>
 
         {/* Badges */}
@@ -137,11 +130,7 @@ export function QuoteCard() {
             🎉 {"You're"} saving <strong>{fmt(d.discount)}</strong> with the Compass Care 5% subscription discount!
           </div>
         )}
-        {d.cardFee > 0 && (
-          <div className="bg-[#fff8e0] border border-tn-gold rounded-md px-[14px] py-[9px] text-[0.78em] font-semibold text-tn-gold-dark text-center my-2">
-            A 3% card processing fee is applied when paying by card.
-          </div>
-        )}
+
         {d.useSA && !isIndividual && (
           <>
             <div className="bg-[#fff0e8] border border-tn-warning rounded-md px-[14px] py-[9px] text-[0.78em] font-semibold text-tn-warning text-center my-2">
