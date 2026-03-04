@@ -7,9 +7,10 @@ import {
 import { Printer } from "lucide-react"
 
 export function QuoteCard() {
-  const { quoteData, setPayMethod, calcQuote } = useQuote()
+  const { quoteData, setPayMethod, calcQuote, serviceType } = useQuote()
 
   const d = quoteData
+  const isIndividual = serviceType === "individual"
 
   function scrollToBooking() {
     document.getElementById("booking")?.scrollIntoView({ behavior: "smooth", block: "start" })
@@ -56,30 +57,42 @@ export function QuoteCard() {
       )}
 
       <div className="px-6 py-[22px]">
-        {/* Mowing Section */}
+        {/* Services Section */}
         <div className="mb-[18px]">
           <div className="text-[0.68em] font-black tracking-[2.5px] uppercase text-tn-lgray pb-[6px] border-b border-tn-stone mb-2">
-            {d.isSub ? "Mowing Service (30 Weeks)" : "Mowing Service"}
+            {isIndividual ? "Selected Services" : d.isSub ? "Compass Care (30 Weeks)" : "Mowing Service"}
           </div>
-          <div className="flex justify-between items-start py-[5px] text-[0.87em]">
-            <span className="text-tn-gray">
-              Weekly Mowing Rate
-              {d.isSub && (
-                <span className="block mt-1 text-[0.75em] text-tn-success font-bold tracking-wide leading-relaxed">
-                  Incl. Spring &amp; Fall Cleanup (1 each)<br />Incl. 2 Edging Visits
+          {!isIndividual && (
+            <>
+              <div className="flex justify-between items-start py-[5px] text-[0.87em]">
+                <span className="text-tn-gray">
+                  Weekly Mowing Rate
+                  {d.isSub && (
+                    <span className="block mt-1 text-[0.75em] text-tn-success font-bold tracking-wide leading-relaxed">
+                      Incl. Spring &amp; Fall Cleanup (1 each)<br />Incl. 2 Edging Visits
+                    </span>
+                  )}
                 </span>
-              )}
-            </span>
-            <span className="font-bold text-tn-field">{fmt(d.weeklyMow)}{d.isSub ? "/wk" : "/visit"}</span>
-          </div>
-          <div className="flex justify-between items-center py-[5px] text-[0.87em]">
-            <span className="text-tn-gray">{d.isSub ? "Mowing Subtotal (x30)" : "Mowing (Single Visit)"}</span>
-            <span className="font-bold text-tn-charcoal">{fmt(d.mowingTotal)}</span>
-          </div>
+                <span className="font-bold text-tn-field">{fmt(d.weeklyMow)}{d.isSub ? "/wk" : "/visit"}</span>
+              </div>
+              <div className="flex justify-between items-center py-[5px] text-[0.87em]">
+                <span className="text-tn-gray">{d.isSub ? "Mowing Subtotal (x30)" : "Mowing (Single Visit)"}</span>
+                <span className="font-bold text-tn-charcoal">{fmt(d.mowingTotal)}</span>
+              </div>
+            </>
+          )}
+          {isIndividual && aoKeys.map((k) => (
+            <div key={k} className="flex justify-between items-center py-[5px] text-[0.87em]">
+              <span className="text-tn-gray">{k}</span>
+              <span className={`font-bold ${d.aos[k] === null ? "text-tn-gold-dark text-[0.78em]" : "text-tn-charcoal"}`}>
+                {d.aos[k] === null ? "Quote requested" : fmt(d.aos[k]!)}
+              </span>
+            </div>
+          ))}
         </div>
 
-        {/* Add-ons Section */}
-        {aoKeys.length > 0 && (
+        {/* Add-ons Section (Compass Care only) */}
+        {!isIndividual && aoKeys.length > 0 && (
           <div className="mb-[18px]">
             <div className="text-[0.68em] font-black tracking-[2.5px] uppercase text-tn-lgray pb-[6px] border-b border-tn-stone mb-2">
               Add-On Services
@@ -88,7 +101,7 @@ export function QuoteCard() {
               <div key={k} className="flex justify-between items-center py-[5px] text-[0.87em]">
                 <span className="text-tn-gray">{k}</span>
                 <span className={`font-bold ${d.aos[k] === null ? "text-tn-gold-dark text-[0.78em]" : "text-tn-charcoal"}`}>
-                  {d.aos[k] === null ? "TBD — we'll quote you" : fmt(d.aos[k]!)}
+                  {d.aos[k] === null ? "Quote requested" : fmt(d.aos[k]!)}
                 </span>
               </div>
             ))}
@@ -129,24 +142,29 @@ export function QuoteCard() {
             A 3% card processing fee is applied when paying by card.
           </div>
         )}
-        {d.useSA && (
+        {d.useSA && !isIndividual && (
           <>
             <div className="bg-[#fff0e8] border border-tn-warning rounded-md px-[14px] py-[9px] text-[0.78em] font-semibold text-tn-warning text-center my-2">
-              🔧 One-off / stand-alone pricing — no commitment required.
+              One-off / stand-alone pricing - no commitment required.
             </div>
             {switchSaving > 0 && (
               <div className="mt-2 bg-gradient-to-br from-[#edf8d8] to-[#d4f0a8] border-[1.5px] border-tn-lime rounded-lg px-[14px] py-[11px] text-[0.83em] text-tn-forest">
-                💡 <strong>Switch to Compass Care and save {fmt(switchSaving)} this season</strong> — plus get Spring &amp; Fall Cleanup and 2 Edging visits included free.
+                <strong>Switch to Compass Care and save {fmt(switchSaving)} this season</strong> - plus get Spring &amp; Fall Cleanup and 2 Edging visits included free.
                 <br />
                 <button
                   onClick={() => { setPayMethod("card"); setTimeout(calcQuote, 50); }}
                   className="mt-[7px] bg-tn-forest text-tn-gold border-none rounded px-[14px] py-[6px] font-serif text-base tracking-[1.5px] cursor-pointer"
                 >
-                  {"Switch to Subscription →"}
+                  {"Switch to Subscription"}
                 </button>
               </div>
             )}
           </>
+        )}
+        {isIndividual && (
+          <div className="bg-[#f0f8ff] border border-tn-forest/20 rounded-md px-[14px] py-[9px] text-[0.78em] font-semibold text-tn-forest text-center my-2">
+            Individual services - pay per service, no commitment required.
+          </div>
         )}
 
         {/* Divider */}
@@ -155,29 +173,26 @@ export function QuoteCard() {
         {/* Total */}
         <div className="flex justify-between items-baseline border-t-[3px] border-tn-forest pt-[14px] mt-2">
           <span className="font-serif text-[1.3em] tracking-[2px] uppercase text-tn-forest">
-            {d.isSub ? "Season Total" : "Service Total"}
+            {d.isSub ? "Season Total" : isIndividual ? "Estimated Total" : "Service Total"}
           </span>
           <span className="font-serif text-[2.8em] text-tn-forest tracking-[1px] leading-none">
             {fmt(d.total)}
           </span>
         </div>
 
-        {/* Weekly payment box */}
-        {(d.pay === "card" || d.pay === "cash") && (
-          <div className="bg-tn-forest rounded-lg px-[18px] py-[14px] text-center mt-[14px]">
-            <div className="text-[0.72em] font-bold tracking-[1.5px] uppercase text-white/60 mb-[3px]">
-              {d.isSub && d.pay === "card" ? "Weekly Card Payment (x30 weeks)" :
-               !d.isSub && d.pay === "card" ? "Card — One-Time Charge" :
-               d.isSub && d.pay === "cash" ? "Cash — Paid in Full Upfront" :
-               "Cash — Due at Service"}
-            </div>
-            <div className="font-serif text-[2em] tracking-[2px] text-tn-gold">
-              {d.isSub && d.pay === "card" ? fmt(d.weeklyPayment ?? 0) + "/wk" :
-               d.isSub ? fmt(d.total) + " due" :
-               fmt(d.total) + (d.pay === "card" ? " total" : " due")}
-            </div>
+        {/* Payment info box */}
+        <div className="bg-tn-forest rounded-lg px-[18px] py-[14px] text-center mt-[14px]">
+          <div className="text-[0.72em] font-bold tracking-[1.5px] uppercase text-white/60 mb-[3px]">
+            {d.isSub && d.pay === "card" ? "Weekly Card Payment (x30 weeks)" :
+             d.isSub && d.pay === "cash" ? "Cash - Paid in Full Upfront" :
+             d.pay === "card" ? "Card Payment" :
+             "Cash - Due at Service"}
           </div>
-        )}
+          <div className="font-serif text-[2em] tracking-[2px] text-tn-gold">
+            {d.isSub && d.pay === "card" ? fmt(d.weeklyPayment ?? 0) + "/wk" :
+             fmt(d.total)}
+          </div>
+        </div>
 
         {/* Savings pill */}
         {d.discount > 0 && (

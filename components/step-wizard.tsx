@@ -3,28 +3,61 @@
 import { useState } from "react"
 import { useQuote } from "@/lib/quote-context"
 import { LOT_OPTIONS, ADDON_OPTIONS } from "@/lib/constants"
-import { Check, ChevronRight, ChevronLeft, Compass, Wrench } from "lucide-react"
+import { Check, ChevronRight, ChevronLeft, Compass, Calendar } from "lucide-react"
 
-type ServiceType = "compass" | "standalone" | null
+interface IndividualService {
+  id: string
+  label: string
+  desc: string
+}
+
+const INDIVIDUAL_SERVICES: IndividualService[] = [
+  { id: "mowing", label: "Weekly Mowing", desc: "Regular lawn mowing service" },
+  { id: "spring", label: "Spring Clean Up", desc: "Debris removal, bed cleanup, and lawn prep" },
+  { id: "fall", label: "Fall Clean Up", desc: "Leaf removal and winterization prep" },
+]
 
 export function StepWizard() {
   const {
     lotSize, setLotSize, payMethod, setPayMethod,
+    serviceType, setServiceType, selectedServices, setSelectedServices,
     addons, toggleAddon, shrubCount, setShrubCount,
     singleStory, setSingleStory, landscapingNote, setLandscapingNote,
     calcQuote,
   } = useQuote()
 
   const [step, setStep] = useState(1)
-  const [serviceType, setServiceType] = useState<ServiceType>(null)
 
+  // Dynamic steps based on service type
+  const getStepLabels = () => {
+    if (serviceType === "individual") {
+      return ["Service Type", "Select Services", "Property Size", "Payment"]
+    }
+    return ["Service Type", "Property Size", "Add-Ons", "Payment"]
+  }
+
+  const stepLabels = getStepLabels()
   const totalSteps = 4
+
+  const toggleService = (id: string) => {
+    setSelectedServices({ ...selectedServices, [id]: !selectedServices[id] })
+  }
+
+  const hasSelectedServices = Object.values(selectedServices).some(v => v)
 
   const canProceed = () => {
     switch (step) {
       case 1: return serviceType !== null
-      case 2: return lotSize !== ""
-      case 3: return true // Add-ons are optional
+      case 2: 
+        if (serviceType === "individual") {
+          return hasSelectedServices
+        }
+        return lotSize !== ""
+      case 3: 
+        if (serviceType === "individual") {
+          return lotSize !== ""
+        }
+        return true // Add-ons are optional for Compass Care
       case 4: return payMethod !== ""
       default: return false
     }
@@ -49,16 +82,16 @@ export function StepWizard() {
     }
   }
 
-  const handleServiceTypeSelect = (type: ServiceType) => {
+  const handleServiceTypeSelect = (type: "compass" | "individual" | null) => {
     setServiceType(type)
-    if (type === "standalone") {
-      setPayMethod("standalone")
+    // Reset selections when changing service type
+    setSelectedServices({})
+    if (type === "individual") {
+      setPayMethod("")
     } else if (type === "compass") {
       setPayMethod("card") // Default to card for compass care
     }
   }
-
-  const stepLabels = ["Service Type", "Property Size", "Add-Ons", "Payment"]
 
   return (
     <div className="bg-tn-white rounded-xl shadow-[var(--shadow-md)] overflow-hidden animate-fade-up">
@@ -175,12 +208,12 @@ export function StepWizard() {
                 )}
               </button>
 
-              {/* Stand-Alone Option */}
+              {/* Individual Services Option */}
               <button
                 type="button"
-                onClick={() => handleServiceTypeSelect("standalone")}
+                onClick={() => handleServiceTypeSelect("individual")}
                 className={`p-5 rounded-xl border-2 transition-all cursor-pointer text-left ${
-                  serviceType === "standalone"
+                  serviceType === "individual"
                     ? "border-tn-gold bg-gradient-to-br from-tn-forest to-tn-green"
                     : "border-tn-border bg-tn-cream hover:border-tn-lime hover:bg-[#f0f8e8]"
                 }`}
@@ -188,35 +221,35 @@ export function StepWizard() {
                 <div className="flex items-center gap-3 mb-3">
                   <div
                     className={`w-11 h-11 rounded-lg flex items-center justify-center ${
-                      serviceType === "standalone" ? "bg-tn-gold text-tn-forest" : "bg-tn-forest text-tn-gold"
+                      serviceType === "individual" ? "bg-tn-gold text-tn-forest" : "bg-tn-forest text-tn-gold"
                     }`}
                   >
-                    <Wrench className="w-6 h-6" />
+                    <Calendar className="w-6 h-6" />
                   </div>
                   <span
                     className={`font-serif text-[1.3em] tracking-[1px] ${
-                      serviceType === "standalone" ? "text-tn-gold" : "text-tn-forest"
+                      serviceType === "individual" ? "text-tn-gold" : "text-tn-forest"
                     }`}
                   >
-                    Stand-Alone
+                    Individual Services
                   </span>
                 </div>
                 <div
                   className={`text-[0.85em] leading-relaxed ${
-                    serviceType === "standalone" ? "text-white/80" : "text-tn-gray"
+                    serviceType === "individual" ? "text-white/80" : "text-tn-gray"
                   }`}
                 >
-                  <span className={`font-bold ${serviceType === "standalone" ? "text-tn-gold" : "text-tn-forest"}`}>
-                    One-Time Service
+                  <span className={`font-bold ${serviceType === "individual" ? "text-tn-gold" : "text-tn-forest"}`}>
+                    Pick What You Need
                   </span>
-                  <ul className={`mt-2 space-y-1 ${serviceType === "standalone" ? "text-white/70" : "text-tn-lgray"}`}>
-                    <li>Single visit or service</li>
+                  <ul className={`mt-2 space-y-1 ${serviceType === "individual" ? "text-white/70" : "text-tn-lgray"}`}>
+                    <li>Weekly Mowing</li>
+                    <li>Spring Clean Up</li>
+                    <li>Fall Clean Up</li>
                     <li>No commitment required</li>
-                    <li>Pay per service</li>
-                    <li>Perfect for occasional needs</li>
                   </ul>
                 </div>
-                {serviceType === "standalone" && (
+                {serviceType === "individual" && (
                   <div className="mt-3 inline-flex items-center gap-1 text-tn-gold text-[0.8em] font-bold">
                     <Check className="w-4 h-4" /> Selected
                   </div>
@@ -226,8 +259,8 @@ export function StepWizard() {
           </div>
         )}
 
-        {/* Step 2: Property Size */}
-        {step === 2 && (
+        {/* Step 2: Property Size (Compass Care) OR Select Services (Individual) */}
+        {step === 2 && serviceType === "compass" && (
           <div className="animate-fade-up">
             <h3 className="font-serif text-[1.4em] tracking-[1.5px] text-tn-forest mb-2 text-center">
               What size is your property?
@@ -276,8 +309,64 @@ export function StepWizard() {
           </div>
         )}
 
-        {/* Step 3: Add-Ons */}
-        {step === 3 && (
+        {/* Step 2: Select Services (Individual Services only) */}
+        {step === 2 && serviceType === "individual" && (
+          <div className="animate-fade-up">
+            <h3 className="font-serif text-[1.4em] tracking-[1.5px] text-tn-forest mb-2 text-center">
+              Which services do you need?
+            </h3>
+            <p className="text-tn-gray text-[0.9em] mb-6 text-center">
+              Select one or more services
+            </p>
+
+            <div className="flex flex-col gap-3 max-w-[500px] mx-auto">
+              {INDIVIDUAL_SERVICES.map((service) => {
+                const isSelected = selectedServices[service.id]
+                return (
+                  <button
+                    key={service.id}
+                    type="button"
+                    onClick={() => toggleService(service.id)}
+                    className={`flex items-center gap-4 px-5 py-4 rounded-xl border-2 transition-all cursor-pointer text-left ${
+                      isSelected
+                        ? "border-tn-gold bg-tn-forest"
+                        : "border-tn-border bg-tn-cream hover:border-tn-lime hover:bg-[#f0f8e8]"
+                    }`}
+                  >
+                    <div
+                      className={`w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${
+                        isSelected
+                          ? "bg-tn-gold border-tn-gold"
+                          : "border-tn-lgray bg-transparent"
+                      }`}
+                    >
+                      {isSelected && <Check className="w-4 h-4 text-tn-forest" />}
+                    </div>
+                    <div className="flex-1">
+                      <span
+                        className={`block font-serif text-[1.15em] tracking-[1px] ${
+                          isSelected ? "text-tn-gold" : "text-tn-forest"
+                        }`}
+                      >
+                        {service.label}
+                      </span>
+                      <span
+                        className={`block text-[0.82em] mt-0.5 ${
+                          isSelected ? "text-white/60" : "text-tn-lgray"
+                        }`}
+                      >
+                        {service.desc}
+                      </span>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Add-Ons (Compass Care) */}
+        {step === 3 && serviceType === "compass" && (
           <div className="animate-fade-up">
             <h3 className="font-serif text-[1.4em] tracking-[1.5px] text-tn-forest mb-2 text-center">
               Any additional services?
@@ -374,6 +463,56 @@ export function StepWizard() {
           </div>
         )}
 
+        {/* Step 3: Property Size (Individual Services) */}
+        {step === 3 && serviceType === "individual" && (
+          <div className="animate-fade-up">
+            <h3 className="font-serif text-[1.4em] tracking-[1.5px] text-tn-forest mb-2 text-center">
+              What size is your property?
+            </h3>
+            <p className="text-tn-gray text-[0.9em] mb-6 text-center">
+              Select the option that best matches your lot size
+            </p>
+
+            <div className="grid grid-cols-3 gap-3 max-md:grid-cols-2 max-sm:grid-cols-1 max-w-[600px] mx-auto">
+              {LOT_OPTIONS.map((opt) => {
+                const isSelected = lotSize === opt.value
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setLotSize(opt.value)}
+                    className={`px-3 py-4 text-center border-2 rounded-xl transition-all cursor-pointer ${
+                      isSelected
+                        ? "border-tn-gold bg-tn-forest"
+                        : "border-tn-border bg-tn-cream hover:border-tn-lime hover:bg-[#f0f8e8]"
+                    }`}
+                  >
+                    <span
+                      className={`block font-serif text-[1.2em] tracking-[1.5px] transition-colors ${
+                        isSelected ? "text-tn-gold" : "text-tn-forest"
+                      }`}
+                    >
+                      {opt.label}
+                    </span>
+                    <span
+                      className={`block text-[0.75em] font-bold mt-1 transition-colors ${
+                        isSelected ? "text-white/60" : "text-tn-lgray"
+                      }`}
+                    >
+                      {opt.sub}
+                    </span>
+                    {isSelected && (
+                      <div className="mt-2 inline-flex items-center gap-1 text-tn-gold text-[0.75em] font-bold">
+                        <Check className="w-3 h-3" />
+                      </div>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Step 4: Payment */}
         {step === 4 && (
           <div className="animate-fade-up">
@@ -459,12 +598,12 @@ export function StepWizard() {
                 </>
               ) : (
                 <>
-                  {/* Stand-alone Card */}
+                  {/* Individual Services - Card */}
                   <button
                     type="button"
-                    onClick={() => setPayMethod("standalone")}
+                    onClick={() => setPayMethod("card")}
                     className={`text-center px-4 py-5 border-2 rounded-xl cursor-pointer transition-all ${
-                      payMethod === "standalone"
+                      payMethod === "card"
                         ? "bg-tn-forest border-tn-gold"
                         : "bg-tn-cream border-tn-border hover:border-tn-lime hover:bg-[#f0f8e8]"
                     }`}
@@ -472,28 +611,28 @@ export function StepWizard() {
                     <span className="text-[2em] block mb-2">💳</span>
                     <span
                       className={`block font-serif text-[1.2em] tracking-[1px] ${
-                        payMethod === "standalone" ? "text-tn-gold" : "text-tn-forest"
+                        payMethod === "card" ? "text-tn-gold" : "text-tn-forest"
                       }`}
                     >
                       Card
                     </span>
                     <span
                       className={`block text-[0.8em] mt-1 leading-relaxed ${
-                        payMethod === "standalone" ? "text-white/60" : "text-tn-lgray"
+                        payMethod === "card" ? "text-white/60" : "text-tn-lgray"
                       }`}
                     >
                       Pay at service
                       <br />
                       +3% service fee
                     </span>
-                    {payMethod === "standalone" && (
+                    {payMethod === "card" && (
                       <div className="mt-2 inline-flex items-center gap-1 text-tn-gold text-[0.75em] font-bold">
                         <Check className="w-3 h-3" />
                       </div>
                     )}
                   </button>
 
-                  {/* Stand-alone Cash */}
+                  {/* Individual Services - Cash */}
                   <button
                     type="button"
                     onClick={() => setPayMethod("standalone")}

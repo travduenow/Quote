@@ -13,6 +13,10 @@ interface QuoteContextType {
   setLotSize: (v: string) => void
   payMethod: string
   setPayMethod: (v: string) => void
+  serviceType: "compass" | "individual" | null
+  setServiceType: (v: "compass" | "individual" | null) => void
+  selectedServices: Record<string, boolean>
+  setSelectedServices: (v: Record<string, boolean>) => void
   addons: Record<string, boolean>
   toggleAddon: (id: string) => void
   shrubCount: number
@@ -40,8 +44,10 @@ interface QuoteContextType {
 const QuoteContext = createContext<QuoteContextType | null>(null)
 
 export function QuoteProvider({ children }: { children: ReactNode }) {
-  const [lotSize, setLotSize] = useState("quarter")
-  const [payMethod, setPayMethod] = useState("card")
+  const [lotSize, setLotSize] = useState("")
+  const [payMethod, setPayMethod] = useState("")
+  const [serviceType, setServiceType] = useState<"compass" | "individual" | null>(null)
+  const [selectedServices, setSelectedServices] = useState<Record<string, boolean>>({})
   const [addons, setAddons] = useState<Record<string, boolean>>({})
   const [shrubCount, setShrubCount] = useState(1)
   const [singleStory, setSingleStory] = useState(false)
@@ -62,51 +68,68 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
     if (!lotSize || !payMethod) return
 
     const deadlinePassed = isAfterDeadline()
-    const useSA = payMethod === "standalone" || deadlinePassed
+    const isIndividual = serviceType === "individual"
+    const useSA = isIndividual || payMethod === "standalone" || deadlinePassed
     const isSub = !useSA
 
-    const weeklyMow = useSA ? SA_MOWING[lotSize] : SUB_MOWING[lotSize]
-    const mowingTotal = isSub ? weeklyMow * WEEKS : weeklyMow
     const aos: Record<string, number | null> = {}
     let aosTotal = 0
+    let mowingTotal = 0
+    let weeklyMow = 0
 
-    if (addons.overseeding) aos["🌱 Overseeding (Quote Requested)"] = null
-    if (addons.aeration) aos["🔄 Core Aeration (Quote Requested)"] = null
-    if (addons.dethatching) aos["🪚 Dethatching (Quote Requested)"] = null
-    if (addons.weed) aos["🌿 Weed Control (Quote Requested)"] = null
-
-    if (addons.shrub) {
-      const n = Math.max(1, shrubCount)
-      const c = AO_RATES.shrub * n
-      aos[`✂️ Shrub Trimming (${n} shrub${n !== 1 ? "s" : ""})`] = c
-      aosTotal += c
-    }
-
-    if (addons.gutter) {
-      if (singleStory) {
-        aos["🍂 Gutter Clean-Out"] = AO_RATES.gutter
-        aosTotal += AO_RATES.gutter
-      } else {
-        aos["🍂 Gutter Clean-Out (Confirm single-story below to include)"] = null
+    // Handle Individual Services
+    if (isIndividual) {
+      if (selectedServices.mowing) {
+        weeklyMow = SA_MOWING[lotSize]
+        aos["Weekly Mowing (per visit)"] = weeklyMow
+        mowingTotal = weeklyMow
       }
-    }
+      if (selectedServices.spring) {
+        aos["Spring Clean Up (Quote Requested)"] = null
+      }
+      if (selectedServices.fall) {
+        aos["Fall Clean Up (Quote Requested)"] = null
+      }
+    } else {
+      // Compass Care subscription
+      weeklyMow = SUB_MOWING[lotSize]
+      mowingTotal = weeklyMow * WEEKS
 
-    if (addons.dog) {
-      if (isSub) {
-        const c = AO_RATES.dog * WEEKS
-        aos["🐾 Dog Waste Pickup (30 wks, 1 dog)"] = c
+      // Add-ons for Compass Care
+      if (addons.overseeding) aos["Overseeding (Quote Requested)"] = null
+      if (addons.aeration) aos["Core Aeration (Quote Requested)"] = null
+      if (addons.dethatching) aos["Dethatching (Quote Requested)"] = null
+      if (addons.weed) aos["Weed Control (Quote Requested)"] = null
+
+      if (addons.shrub) {
+        const n = Math.max(1, shrubCount)
+        const c = AO_RATES.shrub * n
+        aos[`Shrub Trimming (${n} shrub${n !== 1 ? "s" : ""})`] = c
         aosTotal += c
-      } else {
-        aos["🐾 Dog Waste Pickup (Compass Care only)"] = null
       }
-    }
 
-    if (addons.edging) aos["📐 Edging (Quote Requested)"] = null
-    if (addons.landscaping) {
-      const note = landscapingNote.trim()
-      aos[`🌳 General Landscaping (Quote Requested)${note ? ": " + note : ""}`] = null
+      if (addons.gutter) {
+        if (singleStory) {
+          aos["Gutter Clean-Out"] = AO_RATES.gutter
+          aosTotal += AO_RATES.gutter
+        } else {
+          aos["Gutter Clean-Out (Confirm single-story below to include)"] = null
+        }
+      }
+
+      if (addons.dog) {
+        const c = AO_RATES.dog * WEEKS
+        aos["Dog Waste Pickup (30 wks, 1 dog)"] = c
+        aosTotal += c
+      }
+
+      if (addons.edging) aos["Edging (Quote Requested)"] = null
+      if (addons.landscaping) {
+        const note = landscapingNote.trim()
+        aos[`General Landscaping (Quote Requested)${note ? ": " + note : ""}`] = null
+      }
+      if (addons.snow) aos["Snow Removal (Separate Winter Subscription)"] = null
     }
-    if (addons.snow) aos["❄️ Snow Removal (Separate Winter Subscription — Quote Requested)"] = null
 
     const subtotal = mowingTotal + aosTotal
     const discount = isSub ? subtotal * SUB_DISC_RATE : 0
@@ -122,11 +145,12 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
     }
 
     setQuoteData(data)
-  }, [lotSize, payMethod, addons, shrubCount, singleStory, landscapingNote])
+  }, [lotSize, payMethod, serviceType, selectedServices, addons, shrubCount, singleStory, landscapingNote])
 
   return (
     <QuoteContext.Provider value={{
       lotSize, setLotSize, payMethod, setPayMethod,
+      serviceType, setServiceType, selectedServices, setSelectedServices,
       addons, toggleAddon, shrubCount, setShrubCount,
       singleStory, setSingleStory, landscapingNote, setLandscapingNote,
       quoteData, calcQuote, quoteUnlocked, setQuoteUnlocked,
