@@ -9,12 +9,24 @@ interface IndividualService {
   id: string
   label: string
   desc: string
+  price?: string
+  hasInput?: "shrub" | "gutter" | "landscaping"
 }
 
 const INDIVIDUAL_SERVICES: IndividualService[] = [
-  { id: "mowing", label: "Weekly Mowing", desc: "Regular lawn mowing service" },
-  { id: "spring", label: "Spring Clean Up", desc: "Debris removal, bed cleanup, and lawn prep" },
-  { id: "fall", label: "Fall Clean Up", desc: "Leaf removal and winterization prep" },
+  { id: "mowing", label: "Weekly Mowing", desc: "Regular lawn mowing service", price: "Price based on lot size" },
+  { id: "spring", label: "Spring Clean Up", desc: "Debris removal, bed cleanup, and lawn prep", price: "Quote requested" },
+  { id: "fall", label: "Fall Clean Up", desc: "Leaf removal and winterization prep", price: "Quote requested" },
+  { id: "overseeding", label: "Overseeding", desc: "Spreads fresh grass seed to fill in thin or bare spots and thicken your lawn.", price: "Quote requested" },
+  { id: "aeration", label: "Core Aeration", desc: "Pulls small plugs from the soil to reduce compaction and let water and nutrients reach the roots.", price: "Quote requested" },
+  { id: "dethatching", label: "Dethatching", desc: "Removes the layer of dead grass and debris that builds up and chokes healthy growth.", price: "Quote requested" },
+  { id: "weed", label: "Weed Control", desc: "Targeted treatment to eliminate weeds and keep your lawn looking clean all season.", price: "Quote requested" },
+  { id: "shrub", label: "Shrub Trimming", desc: "Shapes and trims shrubs and bushes to keep your landscaping neat and tidy.", price: "$26 per shrub", hasInput: "shrub" },
+  { id: "gutter", label: "Gutter Clean-Out", desc: "Clears leaves and debris from gutters to prevent clogging and water damage.", price: "$155 (single-story only)", hasInput: "gutter" },
+  { id: "dog", label: "Dog Waste Pickup", desc: "Weekly yard cleanup so you never have to deal with it.", price: "$15 per visit" },
+  { id: "edging", label: "Edging", desc: "Clean, sharp lines along driveways, sidewalks, and beds for a polished finished look.", price: "Quote requested" },
+  { id: "landscaping", label: "General Landscaping", desc: "Mulching, planting, bed cleanup, and more.", price: "Quote requested", hasInput: "landscaping" },
+  { id: "snow", label: "Snow Removal", desc: "Driveway and walkway clearing after snowfall.", price: "Quote requested" },
 ]
 
 export function StepWizard() {
@@ -31,13 +43,13 @@ export function StepWizard() {
   // Dynamic steps based on service type
   const getStepLabels = () => {
     if (serviceType === "individual") {
-      return ["Service Type", "Select Services", "Property Size", "Add-Ons", "Payment"]
+      return ["Service Type", "Select Services", "Property Size", "Payment"]
     }
     return ["Service Type", "Property Size", "Add-Ons", "Payment"]
   }
 
   const stepLabels = getStepLabels()
-  const totalSteps = serviceType === "individual" ? 5 : 4
+  const totalSteps = 4
 
   const toggleService = (id: string) => {
     setSelectedServices({ ...selectedServices, [id]: !selectedServices[id] })
@@ -51,8 +63,7 @@ export function StepWizard() {
         case 1: return serviceType !== null
         case 2: return hasSelectedServices
         case 3: return lotSize !== ""
-        case 4: return true // Add-ons are optional
-        case 5: return payMethod !== ""
+        case 4: return payMethod !== ""
         default: return false
       }
     } else {
@@ -322,46 +333,107 @@ export function StepWizard() {
               Select one or more services
             </p>
 
-            <div className="flex flex-col gap-3 max-w-[500px] mx-auto">
+            <div className="flex flex-col gap-3 max-w-[600px] mx-auto max-h-[400px] overflow-y-auto pr-2">
               {INDIVIDUAL_SERVICES.map((service) => {
                 const isSelected = selectedServices[service.id]
                 return (
-                  <button
-                    key={service.id}
-                    type="button"
-                    onClick={() => toggleService(service.id)}
-                    className={`flex items-center gap-4 px-5 py-4 rounded-xl border-2 transition-all cursor-pointer text-left ${
-                      isSelected
-                        ? "border-tn-gold bg-tn-forest"
-                        : "border-tn-border bg-tn-cream hover:border-tn-lime hover:bg-[#f0f8e8]"
-                    }`}
-                  >
+                  <div key={service.id}>
                     <div
-                      className={`w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${
+                      onClick={() => toggleService(service.id)}
+                      className={`flex items-center gap-4 px-5 py-4 rounded-xl border-2 transition-all cursor-pointer ${
                         isSelected
-                          ? "bg-tn-gold border-tn-gold"
-                          : "border-tn-lgray bg-transparent"
+                          ? "border-tn-gold bg-tn-forest"
+                          : "border-tn-border bg-tn-cream hover:border-tn-lime hover:bg-[#f0f8e8]"
                       }`}
                     >
-                      {isSelected && <Check className="w-4 h-4 text-tn-forest" />}
-                    </div>
-                    <div className="flex-1">
-                      <span
-                        className={`block font-serif text-[1.15em] tracking-[1px] ${
-                          isSelected ? "text-tn-gold" : "text-tn-forest"
+                      <div
+                        className={`w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${
+                          isSelected
+                            ? "bg-tn-gold border-tn-gold"
+                            : "border-tn-lgray bg-transparent"
                         }`}
                       >
-                        {service.label}
-                      </span>
-                      <span
-                        className={`block text-[0.82em] mt-0.5 ${
-                          isSelected ? "text-white/60" : "text-tn-lgray"
-                        }`}
-                      >
-                        {service.desc}
-                      </span>
+                        {isSelected && <Check className="w-4 h-4 text-tn-forest" />}
+                      </div>
+                      <div className="flex-1">
+                        <span
+                          className={`block font-serif text-[1.1em] tracking-[1px] ${
+                            isSelected ? "text-tn-gold" : "text-tn-forest"
+                          }`}
+                        >
+                          {service.label}
+                        </span>
+                        <span
+                          className={`block text-[0.8em] mt-0.5 ${
+                            isSelected ? "text-white/60" : "text-tn-lgray"
+                          }`}
+                        >
+                          {service.desc}
+                        </span>
+                        {service.price && (
+                          <span
+                            className={`block text-[0.75em] mt-1 font-semibold ${
+                              isSelected ? "text-tn-gold/80" : "text-tn-field"
+                            }`}
+                          >
+                            {service.price}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </button>
+
+                    {/* Shrub count input */}
+                    {service.hasInput === "shrub" && isSelected && (
+                      <div className="mt-2 ml-10 p-3 bg-tn-cream border border-tn-border rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <label className="text-[0.85em] text-tn-gray">Number of shrubs:</label>
+                          <input
+                            type="number"
+                            min={1}
+                            max={50}
+                            value={shrubCount}
+                            onChange={(e) => setShrubCount(Math.max(1, parseInt(e.target.value) || 1))}
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-20 px-3 py-2 border-2 border-tn-border rounded-md font-sans text-[0.9em] focus:outline-none focus:border-tn-lime"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Gutter confirmation */}
+                    {service.hasInput === "gutter" && isSelected && (
+                      <div className="mt-2 ml-10 p-3 bg-tn-cream border border-tn-border rounded-lg">
+                        <label 
+                          className="flex items-center gap-2 text-[0.85em] text-tn-charcoal cursor-pointer"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={singleStory}
+                            onChange={(e) => setSingleStory(e.target.checked)}
+                            className="accent-tn-field cursor-pointer"
+                          />
+                          I confirm my home is single-story
+                        </label>
+                      </div>
+                    )}
+
+                    {/* Landscaping notes */}
+                    {service.hasInput === "landscaping" && isSelected && (
+                      <div className="mt-2 ml-10 p-3 bg-tn-cream border border-tn-border rounded-lg">
+                        <label className="text-[0.85em] text-tn-gray block mb-1">Describe what you need:</label>
+                        <textarea
+                          value={landscapingNote}
+                          onChange={(e) => setLandscapingNote(e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
+                          rows={2}
+                          maxLength={200}
+                          placeholder="e.g. mulch beds, planting, trimming..."
+                          className="w-full px-3 py-2 border-2 border-tn-border rounded-md font-sans text-[0.86em] resize-y focus:outline-none focus:border-tn-lime"
+                        />
+                      </div>
+                    )}
+                  </div>
                 )
               })}
             </div>
@@ -516,104 +588,6 @@ export function StepWizard() {
           </div>
         )}
 
-        {/* Step 4: Add-Ons (Individual Services) */}
-        {step === 4 && serviceType === "individual" && (
-          <div className="animate-fade-up">
-            <h3 className="font-serif text-[1.4em] tracking-[1.5px] text-tn-forest mb-2 text-center">
-              Any additional services?
-            </h3>
-            <p className="text-tn-gray text-[0.9em] mb-6 text-center">
-              These are optional - skip if you just need the basics
-            </p>
-
-            <div className="flex flex-col gap-2 max-w-[600px] mx-auto max-h-[350px] overflow-y-auto pr-2">
-              {ADDON_OPTIONS.map((ao) => (
-                <div key={ao.id}>
-                  <div
-                    className={`flex items-start gap-3 px-4 py-3 rounded-lg border-2 cursor-pointer select-none transition-all ${
-                      addons[ao.id]
-                        ? "border-tn-field bg-[#edf7dd]"
-                        : "border-tn-border bg-tn-cream hover:border-tn-lime hover:bg-[#f3fae8]"
-                    }`}
-                    onClick={() => toggleAddon(ao.id)}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={!!addons[ao.id]}
-                      readOnly
-                      className="w-[18px] h-[18px] mt-0.5 shrink-0 cursor-pointer accent-tn-field pointer-events-none"
-                    />
-                    <div className="flex-1">
-                      <div className="font-bold text-[0.9em] text-tn-charcoal">
-                        {ao.icon} {ao.label}
-                      </div>
-                      <div className="text-[0.75em] text-tn-lgray mt-0.5 leading-[1.4]">
-                        {ao.desc}
-                      </div>
-                      <div
-                        className={`text-[0.78em] mt-1 ${
-                          ao.eligible
-                            ? "text-tn-field font-bold"
-                            : ao.snowSub
-                            ? "text-[#2980b9] font-bold"
-                            : "text-tn-lgray"
-                        }`}
-                      >
-                        {ao.price}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Sub-inputs */}
-                  {ao.id === "shrub" && addons.shrub && (
-                    <div className="mt-2 ml-8">
-                      <div className="flex items-center gap-3">
-                        <label className="text-[0.85em] text-tn-gray">Number of shrubs:</label>
-                        <input
-                          type="number"
-                          min={1}
-                          max={50}
-                          value={shrubCount}
-                          onChange={(e) => setShrubCount(Math.max(1, parseInt(e.target.value) || 1))}
-                          className="w-20 px-3 py-2 border-2 border-tn-border rounded-md font-sans text-[0.9em] focus:outline-none focus:border-tn-lime"
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {ao.id === "gutter" && addons.gutter && (
-                    <div className="mt-2 ml-8">
-                      <label className="flex items-center gap-2 px-3 py-2 bg-[#fffce8] border border-tn-gold rounded-md text-[0.85em] text-tn-charcoal cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={singleStory}
-                          onChange={(e) => setSingleStory(e.target.checked)}
-                          className="accent-tn-gold-dark cursor-pointer"
-                        />
-                        I confirm my home is single-story
-                      </label>
-                    </div>
-                  )}
-
-                  {ao.id === "landscaping" && addons.landscaping && (
-                    <div className="mt-2 ml-8">
-                      <label className="text-[0.85em] text-tn-gray">Describe what you need:</label>
-                      <textarea
-                        value={landscapingNote}
-                        onChange={(e) => setLandscapingNote(e.target.value)}
-                        rows={2}
-                        maxLength={200}
-                        placeholder="e.g. mulch beds, planting, trimming..."
-                        className="w-full px-3 py-2 border-2 border-tn-border rounded-md font-sans text-[0.86em] resize-y mt-1 focus:outline-none focus:border-tn-lime"
-                      />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Step 4: Payment (Compass Care) */}
         {step === 4 && serviceType === "compass" && (
           <div className="animate-fade-up">
@@ -698,8 +672,8 @@ export function StepWizard() {
           </div>
         )}
 
-        {/* Step 5: Payment (Individual Services) */}
-        {step === 5 && serviceType === "individual" && (
+        {/* Step 4: Payment (Individual Services) */}
+        {step === 4 && serviceType === "individual" && (
           <div className="animate-fade-up">
             <h3 className="font-serif text-[1.4em] tracking-[1.5px] text-tn-forest mb-2 text-center">
               How would you like to pay?

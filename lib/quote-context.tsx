@@ -79,46 +79,58 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
 
     // Handle Individual Services
     if (isIndividual) {
+      // All services are selected directly via selectedServices
       if (selectedServices.mowing) {
         weeklyMow = SA_MOWING[lotSize]
         aos["Weekly Mowing (per visit)"] = weeklyMow
         mowingTotal = weeklyMow
       }
       if (selectedServices.spring) {
-        aos["Spring Clean Up (Quote Requested)"] = null
+        aos["Spring Clean Up"] = null
       }
       if (selectedServices.fall) {
-        aos["Fall Clean Up (Quote Requested)"] = null
+        aos["Fall Clean Up"] = null
       }
-      
-      // Add-ons for Individual Services
-      if (addons.overseeding) aos["Overseeding (Quote Requested)"] = null
-      if (addons.aeration) aos["Core Aeration (Quote Requested)"] = null
-      if (addons.dethatching) aos["Dethatching (Quote Requested)"] = null
-      if (addons.weed) aos["Weed Control (Quote Requested)"] = null
-
-      if (addons.shrub) {
+      if (selectedServices.overseeding) {
+        aos["Overseeding"] = null
+      }
+      if (selectedServices.aeration) {
+        aos["Core Aeration"] = null
+      }
+      if (selectedServices.dethatching) {
+        aos["Dethatching"] = null
+      }
+      if (selectedServices.weed) {
+        aos["Weed Control"] = null
+      }
+      if (selectedServices.shrub) {
         const n = Math.max(1, shrubCount)
         const c = AO_RATES.shrub * n
         aos[`Shrub Trimming (${n} shrub${n !== 1 ? "s" : ""})`] = c
         aosTotal += c
       }
-
-      if (addons.gutter) {
+      if (selectedServices.gutter) {
         if (singleStory) {
           aos["Gutter Clean-Out"] = AO_RATES.gutter
           aosTotal += AO_RATES.gutter
         } else {
-          aos["Gutter Clean-Out (Confirm single-story to include)"] = null
+          aos["Gutter Clean-Out (confirm single-story)"] = null
         }
       }
-
-      if (addons.edging) aos["Edging (Quote Requested)"] = null
-      if (addons.landscaping) {
-        const note = landscapingNote.trim()
-        aos[`General Landscaping (Quote Requested)${note ? ": " + note : ""}`] = null
+      if (selectedServices.dog) {
+        aos["Dog Waste Pickup (per visit)"] = AO_RATES.dog
+        aosTotal += AO_RATES.dog
       }
-      if (addons.snow) aos["Snow Removal (Quote Requested)"] = null
+      if (selectedServices.edging) {
+        aos["Edging"] = null
+      }
+      if (selectedServices.landscaping) {
+        const note = landscapingNote.trim()
+        aos[`General Landscaping${note ? ": " + note : ""}`] = null
+      }
+      if (selectedServices.snow) {
+        aos["Snow Removal"] = null
+      }
     } else {
       // Compass Care subscription
       weeklyMow = SUB_MOWING[lotSize]
