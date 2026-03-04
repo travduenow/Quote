@@ -1,193 +1,26 @@
 "use client"
 
-import { useState } from "react"
 import { useQuote } from "@/lib/quote-context"
 import {
-  fmt, LOT_LABELS, PAY_LABELS, SUB_MOWING, WEEKS, SUB_DISC_RATE, CARD_FEE_RATE,
-  EMAIL_RE, FORMSPREE_URL, REFERRAL_OPTIONS, DEADLINE,
+  fmt, SUB_MOWING, WEEKS, SUB_DISC_RATE, CARD_FEE_RATE, DEADLINE,
 } from "@/lib/constants"
 import { Printer } from "lucide-react"
 
-function formatPhone(value: string): string {
-  let v = value.replace(/\D/g, "").slice(0, 10)
-  if (v.length >= 7) v = "(" + v.slice(0, 3) + ") " + v.slice(3, 6) + "-" + v.slice(6)
-  else if (v.length >= 4) v = "(" + v.slice(0, 3) + ") " + v.slice(3)
-  else if (v.length >= 1) v = "(" + v
-  return v
-}
-
 export function QuoteCard() {
-  const {
-    quoteData, quoteUnlocked, setQuoteUnlocked, payMethod, setPayMethod,
-    gateName, setGateName, gateEmail, setGateEmail,
-    gatePhone, setGatePhone, gateReferral, setGateReferral,
-    gateContactPref, setGateContactPref, calcQuote,
-  } = useQuote()
-
-  const [gateError, setGateError] = useState("")
-  const [gateSending, setGateSending] = useState(false)
+  const { quoteData, setPayMethod, calcQuote } = useQuote()
 
   const d = quoteData
-
-  async function submitGate() {
-    setGateError("")
-
-    if (!gateName.trim()) { setGateError("Please enter your name."); return }
-    if (!gateEmail.trim() || !EMAIL_RE.test(gateEmail)) { setGateError("Please enter a valid email address."); return }
-    if (!gateReferral) { setGateError("Please let us know how you heard about us."); return }
-    if (!gateContactPref) { setGateError("Please select a preferred contact method."); return }
-
-    setGateSending(true)
-
-    try {
-      const qSummary = d
-        ? `${LOT_LABELS[d.lot]} | ${PAY_LABELS[d.pay]} | ${d.isSub ? "Season Total" : "Service Total"}: ${fmt(d.total)}`
-        : "Quote calculated"
-
-      const res = await fetch(FORMSPREE_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          from_name: gateName.trim(),
-          from_email: gateEmail.trim(),
-          phone: gatePhone.trim() || "Not provided",
-          quote_summary: qSummary,
-          contact_pref: gateContactPref,
-          referral: gateReferral || "Not specified",
-          message: "Quote reveal request.",
-          quote_date: new Date().toLocaleString("en-US"),
-          website: "BookTrueNorth.com",
-        }),
-        signal: AbortSignal.timeout(8000),
-      })
-
-      if (!res.ok) throw new Error("Send failed")
-    } catch (err) {
-      console.error("Email gate submission failed:", err)
-      // Still unlock quote but warn user their info may not have been received
-      setGateError("Your quote is ready below, but we may not have received your info. Please double-check your email or call 763-280-1694.")
-    }
-
-    setGateSending(false)
-    setQuoteUnlocked(true)
-  }
 
   function scrollToBooking() {
     document.getElementById("booking")?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
 
-  // Empty state
+  // Empty state - hidden until quote is calculated
   if (!d) {
-    return (
-      <div className="rounded-xl overflow-hidden shadow-[var(--shadow-md)] bg-tn-white sticky top-5 animate-fade-up" style={{ animationDelay: "0.12s" }}>
-        <div className="bg-gradient-to-br from-tn-forest to-tn-green px-[26px] py-6 text-center pb-4">
-          <h3 className="font-serif text-[1.7em] tracking-[2.5px] text-tn-white uppercase mb-[3px]">Your Quote</h3>
-          <p className="text-[0.8em] text-white/65">True North Outdoor Services &middot; BookTrueNorth.com</p>
-        </div>
-        <div className="p-6">
-          <div className="py-9 px-4 text-center text-tn-lgray">
-            <div className="text-[2.8em] opacity-35 mb-[10px]">🌿</div>
-            <p className="text-[0.85em] leading-relaxed">
-              Select lot size, add-ons &amp; payment above to see your quote.
-            </p>
-          </div>
-        </div>
-      </div>
-    )
+    return null
   }
 
-  // Email gate (before revealing quote)
-  if (!quoteUnlocked) {
-    return (
-      <div className="rounded-xl overflow-hidden shadow-[var(--shadow-md)] bg-tn-white sticky top-5 animate-fade-up" style={{ animationDelay: "0.12s" }}>
-        <div className="bg-gradient-to-br from-tn-forest to-tn-green px-[26px] py-6 text-center pb-4">
-          <h3 className="font-serif text-[1.7em] tracking-[2.5px] text-tn-white uppercase mb-[3px]">Your Quote</h3>
-          <p className="text-[0.8em] text-white/65">True North Outdoor Services &middot; BookTrueNorth.com</p>
-        </div>
-        <div className="px-5 py-7 text-center">
-          <div className="text-[2em] mb-2">🌿</div>
-          <div className="inline-block bg-tn-forest text-tn-gold font-serif text-[1.55em] tracking-[3px] px-[22px] py-2 rounded-lg blur-[7px] select-none pointer-events-none mb-3">
-            {d.isSub ? fmt(d.weeklyPayment ?? 0) + "/wk" : fmt(d.total) + " total"}
-          </div>
-          <div className="font-serif text-[1.5em] tracking-[2px] text-tn-forest mb-[6px]">Almost There!</div>
-          <p className="text-[0.9em] text-tn-gray mb-[6px] leading-relaxed">
-            Your personalized price is calculated and ready.<br />
-            Enter your info below and {"we'll"} send it straight to your inbox — <strong className="text-tn-forest">no commitment required.</strong>
-          </p>
-          <p className="text-[0.8em] text-tn-lgray mb-5">
-            🔒 Your info stays private. {"We're"} a small local crew — not a call center.
-          </p>
-          <div className="flex flex-col gap-[10px] max-w-[320px] mx-auto">
-            <input
-              type="text"
-              placeholder="Your Name"
-              value={gateName}
-              onChange={(e) => setGateName(e.target.value)}
-              className="w-full px-[14px] py-3 border-2 border-tn-border rounded-[7px] font-sans text-[0.93em] text-tn-charcoal bg-tn-white focus:outline-none focus:border-tn-lime focus:shadow-[0_0_0_3px_rgba(140,184,58,0.15)] text-left"
-            />
-            <input
-              type="email"
-              placeholder="Your Email Address"
-              value={gateEmail}
-              onChange={(e) => setGateEmail(e.target.value)}
-              className="w-full px-[14px] py-3 border-2 border-tn-border rounded-[7px] font-sans text-[0.93em] text-tn-charcoal bg-tn-white focus:outline-none focus:border-tn-lime focus:shadow-[0_0_0_3px_rgba(140,184,58,0.15)] text-left"
-            />
-            <input
-              type="tel"
-              placeholder="Phone Number (optional)"
-              value={gatePhone}
-              onChange={(e) => setGatePhone(formatPhone(e.target.value))}
-              maxLength={14}
-              className="w-full px-[14px] py-3 border-2 border-tn-border rounded-[7px] font-sans text-[0.93em] text-tn-charcoal bg-tn-white focus:outline-none focus:border-tn-lime focus:shadow-[0_0_0_3px_rgba(140,184,58,0.15)] text-left"
-            />
-            <select
-              value={gateReferral}
-              onChange={(e) => setGateReferral(e.target.value)}
-              className="w-full px-[14px] py-3 border-2 border-tn-border rounded-[7px] font-sans text-[0.93em] text-tn-charcoal bg-tn-white focus:outline-none focus:border-tn-lime text-left"
-            >
-              <option value="">— How did you hear about us? *</option>
-              {REFERRAL_OPTIONS.map((r) => (
-                <option key={r.value} value={r.value}>{r.label}</option>
-              ))}
-            </select>
-            <div className="text-left">
-              <div className="text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">
-                Best Way to Reach You *
-              </div>
-              <div className="flex gap-4 flex-wrap">
-                {["phone", "text", "email"].map((pref) => (
-                  <label key={pref} className="flex items-center gap-2 text-[0.88em] cursor-pointer">
-                    <input
-                      type="radio"
-                      name="gateContactPref"
-                      value={pref}
-                      checked={gateContactPref === pref}
-                      onChange={(e) => setGateContactPref(e.target.value)}
-                      className="accent-tn-field"
-                    />
-                    {pref === "phone" ? "📞 Phone" : pref === "text" ? "💬 Text" : "📧 Email only"}
-                  </label>
-                ))}
-              </div>
-            </div>
-            {gateError && (
-              <div className="text-[0.78em] text-tn-error font-bold text-left">{gateError}</div>
-            )}
-            <button
-              onClick={submitGate}
-              disabled={gateSending}
-              className="w-full bg-tn-gold text-tn-forest font-serif text-[1.15em] tracking-[2px] uppercase py-[14px] border-none rounded-md cursor-pointer transition-all hover:translate-y-[-2px] hover:shadow-[0_6px_20px_rgba(232,185,35,0.45)] hover:bg-[#f5c842] disabled:opacity-70 disabled:cursor-not-allowed"
-            >
-              {gateSending ? "Sending..." : "Show Me My Price"}
-            </button>
-            <div className="text-[0.75em] text-tn-lgray leading-relaxed">
-              {"We'll"} email your quote and only follow up if {"you'd"} like help getting started. No pressure, no spam — promise.
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+
 
   // Full quote result
   const aoKeys = Object.keys(d.aos)

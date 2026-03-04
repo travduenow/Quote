@@ -1,7 +1,7 @@
 "use client"
 
 import { QuoteProvider } from "@/lib/quote-context"
-import { QuoteCalculator } from "@/components/quote-calculator"
+import { StepWizard } from "@/components/step-wizard"
 import { QuoteCard } from "@/components/quote-card"
 import { BookingSection } from "@/components/booking-section"
 import { StickyMobileBar } from "@/components/sticky-mobile-bar"
@@ -11,21 +11,22 @@ export function CalculatorSection() {
     <QuoteProvider>
       {/* Calculator Section */}
       <div id="calculator" className="bg-tn-white border-t-4 border-t-tn-lime print:hidden">
-        <div className="max-w-[1320px] mx-auto px-6 py-16">
+        <div className="max-w-[900px] mx-auto px-6 py-16">
           <div className="text-center mb-2">
             <span className="text-[0.75em] font-black tracking-[4px] uppercase text-tn-field">
-              Compass Care Quote Builder
+              Quick Quote Calculator
             </span>
           </div>
-          <h2 className="text-center font-serif text-[clamp(2em,4vw,3.2em)] tracking-[3px] uppercase text-tn-forest mb-2">
-            Build Your Custom Quote
+          <h2 className="text-center font-serif text-[clamp(2em,4vw,3.2em)] tracking-[3px] uppercase text-tn-forest mb-2 text-balance">
+            Get Your Quote in 4 Easy Steps
           </h2>
           <p className="text-center text-tn-gray text-[0.95em] mb-11">
-            Pick your lot size, optional add-ons, and payment to see your personalized price.
+            Choose your services, see your price instantly.
           </p>
 
-          <div className="grid grid-cols-[1fr_400px] gap-10 items-start max-lg:grid-cols-1">
-            <QuoteCalculator />
+          <StepWizard />
+          
+          <div id="quote-result" className="mt-10">
             <QuoteCard />
           </div>
 
