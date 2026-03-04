@@ -61,9 +61,10 @@ export function StepWizard() {
   const [step, setStep] = useState(1)
 
   // Dynamic steps based on service type
+  // Individual: Property Size before Services so prices can show correctly
   const getStepLabels = () => {
     if (serviceType === "individual") {
-      return ["Service Type", "Select Services", "Property Size", "Payment"]
+      return ["Service Type", "Property Size", "Select Services", "Payment"]
     }
     return ["Service Type", "Property Size", "Add-Ons", "Payment"]
   }

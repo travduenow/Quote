@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, type FormEvent } from "react"
+import { useState, useRef, useEffect, type FormEvent } from "react"
 import { useQuote } from "@/lib/quote-context"
 import {
   fmt, LOT_LABELS, PAY_LABELS, EMAIL_RE, FORMSPREE_URL, isAfterDeadline,
@@ -18,10 +18,27 @@ function formatPhone(value: string): string {
 export function BookingForm() {
   const { quoteData, gateName, gateEmail, gatePhone, gateReferral, gateContactPref } = useQuote()
 
-  const [fname, setFname] = useState(gateName.split(" ")[0] || "")
-  const [lname, setLname] = useState(gateName.split(" ").slice(1).join(" ") || "")
-  const [email, setEmail] = useState(gateEmail)
-  const [phone, setPhone] = useState(gatePhone)
+  const [fname, setFname] = useState("")
+  const [lname, setLname] = useState("")
+  const [email, setEmail] = useState("")
+  const [phone, setPhone] = useState("")
+  
+  // Sync gate values when they change (after user unlocks quote)
+  useEffect(() => {
+    if (gateName) {
+      const parts = gateName.split(" ")
+      setFname(parts[0] || "")
+      setLname(parts.slice(1).join(" ") || "")
+    }
+  }, [gateName])
+  
+  useEffect(() => {
+    if (gateEmail) setEmail(gateEmail)
+  }, [gateEmail])
+  
+  useEffect(() => {
+    if (gatePhone) setPhone(gatePhone)
+  }, [gatePhone])
   const [address, setAddress] = useState("")
   const [city, setCity] = useState("")
   const [state, setState] = useState("MN")
