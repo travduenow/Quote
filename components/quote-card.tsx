@@ -352,7 +352,7 @@ export const QuoteCard = memo(function QuoteCard() {
             </div>
             {switchSaving > 0 && (
               <div className="mt-2 bg-gradient-to-br from-[#edf8d8] to-[#d4f0a8] border-[1.5px] border-tn-lime rounded-lg px-[14px] py-[11px] text-[0.83em] text-tn-forest">
-                💡 <strong>Switch to Compass Care and save {fmt(switchSaving)} this season</strong> — plus get Spring &amp; Fall Cleanup and 2 Edging visits included free.
+                💡 <strong>Switch to Compass Care and save {fmt(switchSaving)} this season</strong> — includes 1 edge trim per week.
                 <br />
                 <button
                   onClick={() => { setPayMethod("card"); setTimeout(calcQuote, 50); }}

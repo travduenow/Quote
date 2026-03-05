@@ -117,6 +117,23 @@ export const QuoteWizard = memo(function QuoteWizard() {
             <label className="block text-[0.72em] font-black tracking-[2.5px] uppercase text-tn-forest mb-4 pb-[6px] border-b-2 border-tn-stone">
               Choose Your Service
             </label>
+
+            {/* Service Type Descriptions */}
+            <div className="grid grid-cols-2 gap-4 mb-6 max-sm:grid-cols-1">
+              <div className="bg-tn-forest/5 rounded-lg px-4 py-3 border-2 border-tn-forest/10">
+                <div className="font-bold text-[0.9em] text-tn-forest mb-1">Compass Care</div>
+                <div className="text-[0.75em] text-tn-gray leading-relaxed">
+                  Weekly mowing all season • 1 edge trim included
+                </div>
+              </div>
+              <div className="bg-tn-gold/5 rounded-lg px-4 py-3 border-2 border-tn-gold/10">
+                <div className="font-bold text-[0.9em] text-tn-forest mb-1">One-Time Service</div>
+                <div className="text-[0.75em] text-tn-gray leading-relaxed">
+                  Single lawn mowing • 1 edge trim included
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 gap-4" role="group" aria-label="Service type options">
               {/* Compass Care */}
               <button
@@ -136,7 +153,7 @@ export const QuoteWizard = memo(function QuoteWizard() {
                 <span className={`block text-[0.85em] font-semibold mt-1 leading-relaxed ${
                   payMethod === "card" ? "text-white/70" : "text-tn-lgray"
                 }`}>
-                  Weekly lawn care all season • Billed weekly • 5% subscription discount • Includes most add-ons
+                  Weekly recurring service • Billed weekly • 5% discount
                 </span>
               </button>
 
@@ -158,7 +175,7 @@ export const QuoteWizard = memo(function QuoteWizard() {
                 <span className={`block text-[0.85em] font-semibold mt-1 leading-relaxed ${
                   payMethod === "standalone" ? "text-white/70" : "text-tn-lgray"
                 }`}>
-                  Single lawn mowing • Pay once • No commitment • Perfect for one-off needs
+                  Single service • Pay once • No commitment
                 </span>
               </button>
 
@@ -180,7 +197,7 @@ export const QuoteWizard = memo(function QuoteWizard() {
                 <span className={`block text-[0.85em] font-semibold mt-1 leading-relaxed ${
                   payMethod === "cash" ? "text-white/70" : "text-tn-lgray"
                 }`}>
-                  Full payment upfront • No credit card fees • Works with Compass Care
+                  Full payment upfront • No credit card fees
                 </span>
               </button>
             </div>
