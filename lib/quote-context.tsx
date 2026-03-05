@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react"
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react"
 import {
   WEEKS, CARD_FEE_RATE, SUB_DISC_RATE,
   SUB_MOWING, SA_MOWING, AO_RATES,
@@ -137,6 +137,11 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
       setIsCalculating(false)
     }, 300)
   }, [lotSize, payMethod, addons, shrubCount, singleStory, landscapingNote])
+
+  // Auto-calculate quote when dependencies change
+  useEffect(() => {
+    calcQuote()
+  }, [calcQuote])
 
   return (
     <QuoteContext.Provider value={{

@@ -22,7 +22,7 @@ export const QuoteCard = memo(function QuoteCard() {
     quoteData, quoteUnlocked, setQuoteUnlocked, payMethod, setPayMethod,
     gateName, setGateName, gateEmail, setGateEmail,
     gatePhone, setGatePhone, gateReferral, setGateReferral,
-    gateContactPref, setGateContactPref, calcQuote, isCalculating,
+    gateContactPref, setGateContactPref, calcQuote, isCalculating, lotSize,
   } = useQuote()
 
   const [gateError, setGateError] = useState("")
