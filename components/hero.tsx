@@ -24,7 +24,7 @@ export function Hero() {
       </h1>
 
       <p className="text-[1.05em] text-white/75 font-light tracking-wide mb-7">
-        30-Week Season &middot; 5% Off &middot; Spring/Fall Cleanup Included &middot; 2 Edge Jobs Included
+        Weekly lawn care • Subscription & One-Time options available
       </p>
 
       <div className="flex justify-center gap-[14px] flex-wrap">
