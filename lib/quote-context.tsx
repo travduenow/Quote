@@ -62,6 +62,12 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
 
   const calcQuote = useCallback(() => {
     if (!lotSize || !payMethod) return
+    
+    // Return early if custom lot size is selected
+    if (lotSize === "custom") {
+      setQuoteData(null)
+      return
+    }
 
     setIsCalculating(true)
     

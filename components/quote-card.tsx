@@ -96,14 +96,34 @@ export const QuoteCard = memo(function QuoteCard() {
         <div className="p-6">
           <div className="py-9 px-4 text-center">
             <div className="text-[2.8em] opacity-35 mb-[10px]">🌿</div>
-            <p className="text-[0.85em] leading-relaxed text-tn-lgray">
-              Select lot size, add-ons &amp; payment above to see your quote.
-            </p>
-            <div className="mt-6 flex gap-2 justify-center">
-              <div className="h-3 w-3 rounded-full bg-tn-stone/30 animate-pulse" />
-              <div className="h-3 w-3 rounded-full bg-tn-stone/30 animate-pulse" style={{ animationDelay: "0.1s" }} />
-              <div className="h-3 w-3 rounded-full bg-tn-stone/30 animate-pulse" style={{ animationDelay: "0.2s" }} />
-            </div>
+            {/* Custom lot size selected */}
+            {quoteData === null && lotSize === "custom" ? (
+              <div className="space-y-4">
+                <p className="text-[1.1em] font-serif tracking-[1px] text-tn-forest font-bold">Large Lot Sizing</p>
+                <p className="text-[0.9em] leading-relaxed text-tn-gray mb-4">
+                  For properties 1+ acres, we provide custom quotes based on your specific yard layout and service preferences.
+                </p>
+                <div className="bg-tn-gold/10 border-2 border-tn-gold/30 rounded-lg px-4 py-3">
+                  <p className="text-[0.85em] font-semibold text-tn-forest">
+                    📞 Call us for a personalized quote: <span className="text-tn-gold font-bold">763-280-1694</span>
+                  </p>
+                  <p className="text-[0.75em] text-tn-gray mt-2">
+                    We're happy to discuss your property and find the perfect plan.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <>
+                <p className="text-[0.85em] leading-relaxed text-tn-lgray">
+                  Select lot size, add-ons &amp; payment above to see your quote.
+                </p>
+                <div className="mt-6 flex gap-2 justify-center">
+                  <div className="h-3 w-3 rounded-full bg-tn-stone/30 animate-pulse" />
+                  <div className="h-3 w-3 rounded-full bg-tn-stone/30 animate-pulse" style={{ animationDelay: "0.1s" }} />
+                  <div className="h-3 w-3 rounded-full bg-tn-stone/30 animate-pulse" style={{ animationDelay: "0.2s" }} />
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

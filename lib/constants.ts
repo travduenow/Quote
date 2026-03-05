@@ -38,6 +38,7 @@ export const LOT_LABELS: Record<string, string> = {
   half: '1/2 Acre',
   threequarter: '3/4 Acre',
   acre: '1 Acre',
+  custom: '1+ Acre (Custom)',
 }
 
 export const PAY_LABELS: Record<string, string> = {
@@ -55,11 +56,12 @@ function getSeasonDeadline(): Date {
 export const DEADLINE = getSeasonDeadline()
 
 export const LOT_OPTIONS = [
-  { value: 'eighth', label: '1/8 Acre', sub: 'Starting at $63/wk' },
-  { value: 'quarter', label: '1/4 Acre', sub: 'Starting at $76/wk' },
-  { value: 'half', label: '1/2 Acre', sub: 'Starting at $96/wk' },
-  { value: 'threequarter', label: '3/4 Acre', sub: 'Starting at $112/wk' },
-  { value: 'acre', label: '1 Acre', sub: 'Starting at $128/wk' },
+  { value: 'eighth', label: '1/8 Acre', sub: 'Small' },
+  { value: 'quarter', label: '1/4 Acre', sub: 'Small-Medium' },
+  { value: 'half', label: '1/2 Acre', sub: 'Medium' },
+  { value: 'threequarter', label: '3/4 Acre', sub: 'Medium-Large' },
+  { value: 'acre', label: '1 Acre', sub: 'Large' },
+  { value: 'custom', label: '1+ Acre', sub: 'Contact for Quote' },
 ]
 
 export const ADDON_OPTIONS = [
