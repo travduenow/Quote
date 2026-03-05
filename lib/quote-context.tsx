@@ -140,8 +140,10 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
 
   // Auto-calculate quote when dependencies change
   useEffect(() => {
-    calcQuote()
-  }, [calcQuote])
+    if (lotSize && payMethod) {
+      calcQuote()
+    }
+  }, [lotSize, payMethod, addons, shrubCount, singleStory, landscapingNote, calcQuote])
 
   return (
     <QuoteContext.Provider value={{

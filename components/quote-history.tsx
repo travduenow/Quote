@@ -11,12 +11,21 @@ export const QuoteHistory = memo(function QuoteHistory() {
   const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
-    setQuotes(getStoredQuotes())
+    try {
+      setQuotes(getStoredQuotes())
+    } catch (err) {
+      console.error("Failed to load saved quotes:", err)
+      setQuotes([])
+    }
   }, [])
 
   const handleDelete = (id: string) => {
-    deleteQuote(id)
-    setQuotes(getStoredQuotes())
+    try {
+      deleteQuote(id)
+      setQuotes(getStoredQuotes())
+    } catch (err) {
+      console.error("Failed to delete quote:", err)
+    }
   }
 
   const handleLoadQuote = (quote: StoredQuote) => {

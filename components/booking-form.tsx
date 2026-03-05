@@ -98,6 +98,7 @@ export const BookingForm = memo(function BookingForm() {
       })
 
       if (!res.ok) throw new Error("Send failed")
+      setSending(false)
       setSuccess(true)
     } catch (err) {
       setSending(false)
