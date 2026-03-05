@@ -17,7 +17,7 @@ export const QuoteWizard = memo(function QuoteWizard() {
 
   const steps = [
     { num: 1, title: "Lot Size", description: "What size is your property?" },
-    { num: 2, title: "Payment", description: "Choose your payment method" },
+    { num: 2, title: "Service Type", description: "Choose your service package" },
     { num: 3, title: "Add-ons", description: "Select optional services" },
     { num: 4, title: "Your Quote", description: "Review your personalized price" },
   ]
@@ -111,43 +111,78 @@ export const QuoteWizard = memo(function QuoteWizard() {
           </div>
         )}
 
-        {/* STEP 2: Payment Method */}
+        {/* STEP 2: Service Type - Compass Care vs One-Time Service */}
         {currentStep === 2 && (
           <div className="flex-1">
             <label className="block text-[0.72em] font-black tracking-[2.5px] uppercase text-tn-forest mb-4 pb-[6px] border-b-2 border-tn-stone">
-              Payment Method
+              Choose Your Service
             </label>
-            <div className="grid grid-cols-1 gap-3" role="group" aria-label="Payment method options">
-              {[
-                { value: "card", icon: "💳", name: "Card", desc: "Billed weekly • +3% fee" },
-                { value: "cash", icon: "💵", name: "Cash", desc: "Paid in full upfront • no fee" },
-                { value: "standalone", icon: "📋", name: "Stand-Alone", desc: "One-off service • no commitment" },
-              ].map((opt) => {
-                const isSelected = payMethod === opt.value
-                return (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => setPayMethod(opt.value)}
-                    aria-pressed={isSelected}
-                    className={`text-left px-4 py-4 border-2 rounded-lg cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tn-gold ${
-                      isSelected
-                        ? "bg-tn-forest border-tn-forest text-tn-gold"
-                        : "bg-tn-cream border-tn-border hover:border-tn-lime"
-                    }`}
-                  >
-                    <span className="text-[1.6em] block mb-1">{opt.icon}</span>
-                    <span className={`block font-serif text-[1.1em] tracking-[1px] ${isSelected ? "text-tn-gold" : "text-tn-charcoal"}`}>
-                      {opt.name}
-                    </span>
-                    <span className={`block text-[0.75em] font-semibold mt-px ${
-                      isSelected ? "text-white/60" : "text-tn-lgray"
-                    }`}>
-                      {opt.desc}
-                    </span>
-                  </button>
-                )
-              })}
+            <div className="grid grid-cols-1 gap-4" role="group" aria-label="Service type options">
+              {/* Compass Care */}
+              <button
+                type="button"
+                onClick={() => setPayMethod("card")}
+                aria-pressed={payMethod === "card"}
+                className={`text-left px-6 py-5 border-2 rounded-lg cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tn-gold ${
+                  payMethod === "card"
+                    ? "bg-tn-forest border-tn-forest text-tn-gold"
+                    : "bg-tn-cream border-tn-border hover:border-tn-lime"
+                }`}
+              >
+                <span className="text-[2em] block mb-2">🔄</span>
+                <span className={`block font-serif text-[1.2em] tracking-[1px] font-bold ${payMethod === "card" ? "text-tn-gold" : "text-tn-charcoal"}`}>
+                  Compass Care Subscription
+                </span>
+                <span className={`block text-[0.85em] font-semibold mt-1 leading-relaxed ${
+                  payMethod === "card" ? "text-white/70" : "text-tn-lgray"
+                }`}>
+                  Weekly lawn care all season • Billed weekly • 5% subscription discount • Includes most add-ons
+                </span>
+              </button>
+
+              {/* One-Time Service */}
+              <button
+                type="button"
+                onClick={() => setPayMethod("standalone")}
+                aria-pressed={payMethod === "standalone"}
+                className={`text-left px-6 py-5 border-2 rounded-lg cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tn-gold ${
+                  payMethod === "standalone"
+                    ? "bg-tn-forest border-tn-forest text-tn-gold"
+                    : "bg-tn-cream border-tn-border hover:border-tn-lime"
+                }`}
+              >
+                <span className="text-[2em] block mb-2">📋</span>
+                <span className={`block font-serif text-[1.2em] tracking-[1px] font-bold ${payMethod === "standalone" ? "text-tn-gold" : "text-tn-charcoal"}`}>
+                  One-Time Service
+                </span>
+                <span className={`block text-[0.85em] font-semibold mt-1 leading-relaxed ${
+                  payMethod === "standalone" ? "text-white/70" : "text-tn-lgray"
+                }`}>
+                  Single lawn mowing • Pay once • No commitment • Perfect for one-off needs
+                </span>
+              </button>
+
+              {/* Optional: Cash Payment */}
+              <button
+                type="button"
+                onClick={() => setPayMethod("cash")}
+                aria-pressed={payMethod === "cash"}
+                className={`text-left px-6 py-5 border-2 rounded-lg cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tn-gold ${
+                  payMethod === "cash"
+                    ? "bg-tn-forest border-tn-forest text-tn-gold"
+                    : "bg-tn-cream border-tn-border hover:border-tn-lime"
+                }`}
+              >
+                <span className="text-[2em] block mb-2">💵</span>
+                <span className={`block font-serif text-[1.2em] tracking-[1px] font-bold ${payMethod === "cash" ? "text-tn-gold" : "text-tn-charcoal"}`}>
+                  Cash Payment Option
+                </span>
+                <span className={`block text-[0.85em] font-semibold mt-1 leading-relaxed ${
+                  payMethod === "cash" ? "text-white/70" : "text-tn-lgray"
+                }`}>
+                  Full payment upfront • No credit card fees • Works with Compass Care
+                </span>
+              </button>
             </div>
           </div>
         )}

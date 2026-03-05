@@ -265,11 +265,11 @@ export const QuoteCard = memo(function QuoteCard() {
       </div>
 
       {/* Deadline notice */}
-      {d.deadlinePassed && d.pay !== "standalone" && (
-        <div className="bg-tn-gold text-tn-forest px-5 py-[10px] text-[0.82em] font-bold text-center">
-          Subscription sign-up closed April 1 — stand-alone pricing applied. Next deal opens {nextStr}!
-        </div>
-      )}
+        {d.deadlinePassed && d.pay !== "standalone" && (
+          <div className="bg-[#fffaed] border border-tn-warning rounded-md px-[14px] py-[9px] text-[0.78em] font-semibold text-tn-warning text-center my-2">
+            Subscription sign-up closed April 1 — One-Time Service pricing applied. Next season opens {nextStr}!
+          </div>
+        )}
 
       <div className="px-6 py-[22px]">
         {/* Mowing Section */}
@@ -348,7 +348,7 @@ export const QuoteCard = memo(function QuoteCard() {
         {d.useSA && (
           <>
             <div className="bg-[#fff0e8] border border-tn-warning rounded-md px-[14px] py-[9px] text-[0.78em] font-semibold text-tn-warning text-center my-2">
-              🔧 One-off / stand-alone pricing — no commitment required.
+              📋 One-Time Service pricing — no commitment required.
             </div>
             {switchSaving > 0 && (
               <div className="mt-2 bg-gradient-to-br from-[#edf8d8] to-[#d4f0a8] border-[1.5px] border-tn-lime rounded-lg px-[14px] py-[11px] text-[0.83em] text-tn-forest">
@@ -358,7 +358,7 @@ export const QuoteCard = memo(function QuoteCard() {
                   onClick={() => { setPayMethod("card"); setTimeout(calcQuote, 50); }}
                   className="mt-[7px] bg-tn-forest text-tn-gold border-none rounded px-[14px] py-[6px] font-serif text-base tracking-[1.5px] cursor-pointer"
                 >
-                  {"Switch to Subscription →"}
+                  {"Switch to Compass Care →"}
                 </button>
               </div>
             )}
@@ -371,7 +371,7 @@ export const QuoteCard = memo(function QuoteCard() {
         {/* Total */}
         <div className="flex justify-between items-baseline border-t-[3px] border-tn-forest pt-[14px] mt-2">
           <span className="font-serif text-[1.3em] tracking-[2px] uppercase text-tn-forest">
-            {d.isSub ? "Season Total" : "Service Total"}
+            {d.isSub ? "Compass Care Total" : "One-Time Service"}
           </span>
           <span className="font-serif text-[2.8em] text-tn-forest tracking-[1px] leading-none">
             {fmt(d.total)}
@@ -382,10 +382,10 @@ export const QuoteCard = memo(function QuoteCard() {
         {(d.pay === "card" || d.pay === "cash") && (
           <div className="bg-tn-forest rounded-lg px-[18px] py-[14px] text-center mt-[14px]">
             <div className="text-[0.72em] font-bold tracking-[1.5px] uppercase text-white/60 mb-[3px]">
-              {d.isSub && d.pay === "card" ? "Weekly Card Payment (x30 weeks)" :
-               !d.isSub && d.pay === "card" ? "Card — One-Time Charge" :
-               d.isSub && d.pay === "cash" ? "Cash — Paid in Full Upfront" :
-               "Cash — Due at Service"}
+              {d.isSub && d.pay === "card" ? "Weekly Payment (30 weeks)" :
+               !d.isSub && d.pay === "card" ? "One-Time Charge" :
+               d.isSub && d.pay === "cash" ? "Compass Care — Full Upfront" :
+               "Due at Service"}
             </div>
             <div className="font-serif text-[2em] tracking-[2px] text-tn-gold">
               {d.isSub && d.pay === "card" ? fmt(d.weeklyPayment ?? 0) + "/wk" :

@@ -44,7 +44,7 @@ export const LOT_LABELS: Record<string, string> = {
 export const PAY_LABELS: Record<string, string> = {
   card: 'Card (weekly)',
   cash: 'Cash (full upfront)',
-  standalone: 'Stand-Alone',
+  standalone: 'One-Time Service',
 }
 
 // Season deadline — auto-rolls to next year if current deadline has passed

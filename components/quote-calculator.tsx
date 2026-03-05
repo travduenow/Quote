@@ -173,7 +173,7 @@ export const QuoteCalculator = memo(function QuoteCalculator() {
             {[
               { value: "card", icon: "💳", name: "Card", desc: "Billed weekly\n+3% service fee" },
               { value: "cash", icon: "💵", name: "Cash", desc: "Paid in full\nupfront · no fee" },
-              { value: "standalone", icon: "📋", name: "Stand-Alone", desc: "One-off service\nno commitment" },
+              { value: "standalone", icon: "📋", name: "One-Time Service", desc: "Single service\nNo commitment" },
             ].map((opt) => {
               const isSelected = payMethod === opt.value
               return (
