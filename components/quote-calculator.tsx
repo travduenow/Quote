@@ -2,7 +2,8 @@
 
 import { useQuote } from "@/lib/quote-context"
 import { LOT_OPTIONS, ADDON_OPTIONS } from "@/lib/constants"
-import { Calculator, Zap } from "lucide-react"
+import { Calculator } from "lucide-react"
+import { useEffect } from "react"
 
 export function QuoteCalculator() {
   const {
@@ -11,6 +12,11 @@ export function QuoteCalculator() {
     singleStory, setSingleStory, landscapingNote, setLandscapingNote,
     calcQuote,
   } = useQuote()
+
+  // Auto-calculate when any parameter changes
+  useEffect(() => {
+    calcQuote()
+  }, [lotSize, payMethod, addons, shrubCount, singleStory, landscapingNote, calcQuote])
 
   return (
     <div className="bg-tn-white rounded-xl shadow-[var(--shadow-md)] overflow-hidden animate-fade-up">
@@ -32,10 +38,10 @@ export function QuoteCalculator() {
       <div className="p-[30px]">
         {/* LOT SIZE */}
         <div className="mb-7">
-          <label className="block text-[0.72em] font-black tracking-[2.5px] uppercase text-tn-forest mb-3 pb-[6px] border-b-2 border-tn-stone">
+          <label htmlFor="lot-size" className="block text-[0.72em] font-black tracking-[2.5px] uppercase text-tn-forest mb-3 pb-[6px] border-b-2 border-tn-stone">
             1. Select Your Lot Size
           </label>
-          <div className="grid grid-cols-3 gap-[9px] max-md:grid-cols-2 max-sm:grid-cols-1">
+          <div id="lot-size" role="group" aria-label="Lot size options" className="grid grid-cols-3 gap-[9px] max-md:grid-cols-2 max-sm:grid-cols-1">
             {LOT_OPTIONS.map((opt) => {
               const isSelected = lotSize === opt.value
               return (
@@ -43,6 +49,7 @@ export function QuoteCalculator() {
                   key={opt.value}
                   type="button"
                   onClick={() => setLotSize(opt.value)}
+                  aria-label={`Select ${opt.label} lot size`}
                   className={`px-2 py-[13px] text-center border-2 rounded-lg transition-all cursor-pointer ${
                     isSelected
                       ? "border-tn-gold bg-tn-forest"
@@ -67,10 +74,10 @@ export function QuoteCalculator() {
 
         {/* ADD-ONS */}
         <div className="mb-7">
-          <label className="block text-[0.72em] font-black tracking-[2.5px] uppercase text-tn-forest mb-3 pb-[6px] border-b-2 border-tn-stone">
+          <label htmlFor="addons" className="block text-[0.72em] font-black tracking-[2.5px] uppercase text-tn-forest mb-3 pb-[6px] border-b-2 border-tn-stone">
             2. Optional Add-On Services
           </label>
-          <div className="flex flex-col gap-2">
+          <div id="addons" role="group" aria-label="Add-on services options" className="flex flex-col gap-2">
             {ADDON_OPTIONS.map((ao) => (
               <div key={ao.id}>
                 <div
@@ -149,10 +156,10 @@ export function QuoteCalculator() {
 
         {/* PAYMENT METHOD */}
         <div className="mb-7">
-          <label className="block text-[0.72em] font-black tracking-[2.5px] uppercase text-tn-forest mb-3 pb-[6px] border-b-2 border-tn-stone">
+          <label htmlFor="payment" className="block text-[0.72em] font-black tracking-[2.5px] uppercase text-tn-forest mb-3 pb-[6px] border-b-2 border-tn-stone">
             3. Payment Method
           </label>
-          <div className="grid grid-cols-3 gap-[9px] max-sm:grid-cols-1">
+          <div id="payment" role="group" aria-label="Payment method options" className="grid grid-cols-3 gap-[9px] max-sm:grid-cols-1">
             {[
               { value: "card", icon: "💳", name: "Card", desc: "Billed weekly\n+3% service fee" },
               { value: "cash", icon: "💵", name: "Cash", desc: "Paid in full\nupfront · no fee" },
@@ -164,6 +171,7 @@ export function QuoteCalculator() {
                   key={opt.value}
                   type="button"
                   onClick={() => setPayMethod(opt.value)}
+                  aria-label={`Pay by ${opt.name}: ${opt.desc.replace(/\n/g, ' ')}`}
                   className={`text-center px-2 py-[14px] border-2 rounded-lg cursor-pointer transition-all ${
                     isSelected
                       ? "bg-tn-forest border-tn-forest text-tn-gold"
@@ -182,14 +190,6 @@ export function QuoteCalculator() {
             })}
           </div>
         </div>
-
-        <button
-          onClick={calcQuote}
-          className="w-full mt-[26px] bg-gradient-to-br from-tn-forest to-tn-field text-tn-white border-none cursor-pointer font-serif text-[1.5em] tracking-[3px] uppercase py-[18px] rounded-lg transition-all hover:translate-y-[-2px] hover:shadow-[0_8px_28px_rgba(26,61,10,0.4)] flex items-center justify-center gap-2"
-        >
-          <Zap className="w-5 h-5" />
-          Calculate My Quote Now
-        </button>
       </div>
     </div>
   )

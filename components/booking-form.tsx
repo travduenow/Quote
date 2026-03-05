@@ -15,6 +15,14 @@ function formatPhone(value: string): string {
   return v
 }
 
+function isValidPhone(phone: string): boolean {
+  return phone.replace(/\D/g, "").length >= 10
+}
+
+function isValidZip(zip: string): boolean {
+  return /^\d{5}$/.test(zip)
+}
+
 export function BookingForm() {
   const { quoteData, gateName, gateEmail, gatePhone, gateReferral, gateContactPref } = useQuote()
 
@@ -48,15 +56,21 @@ export function BookingForm() {
     e.preventDefault()
     setErrMsg("")
 
+    // Validate Formspree is configured
+    if (!FORMSPREE_URL) {
+      setErrMsg("Form submission is not configured. Please call 763-280-1694 to book.")
+      return
+    }
+
     const inv = new Set<string>()
     if (!fname.trim()) inv.add("fname")
     if (!lname.trim()) inv.add("lname")
     if (!email.trim() || !EMAIL_RE.test(email)) inv.add("email")
-    if (!phone.trim() || phone.replace(/\D/g, "").length < 7) inv.add("phone")
+    if (!phone.trim() || !isValidPhone(phone)) inv.add("phone")
     if (!address.trim()) inv.add("address")
     if (!city.trim()) inv.add("city")
     if (!state.trim()) inv.add("state")
-    if (!zip.trim() || !/^\d{5}$/.test(zip)) inv.add("zip")
+    if (!zip.trim() || !isValidZip(zip)) inv.add("zip")
     if (!quoteSummary) inv.add("quote")
     if (!contactPref) inv.add("contactPref")
     if (!terms) inv.add("terms")
@@ -110,6 +124,10 @@ export function BookingForm() {
       invalidFields.has(field) ? "border-tn-error" : "border-tn-border"
     }`
 
+  const getLabelId = (field: string) => `label-${field}`
+
+  const getErrorId = (field: string) => invalidFields.has(field) ? `error-${field}` : undefined
+
   const today = new Date()
   const minDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`
 
@@ -148,15 +166,15 @@ export function BookingForm() {
         <div className="flex flex-wrap gap-[10px] justify-center mt-[22px]">
           <a
             href="tel:7632801694"
-            className="inline-flex items-center gap-[7px] bg-tn-gold text-tn-white font-serif text-[1.05em] tracking-[2px] px-[22px] py-[11px] rounded-lg no-underline shadow-[0_3px_10px_rgba(239,162,67,0.35)] hover:bg-tn-gold-dark transition-colors"
+            className="inline-flex items-center gap-[7px] bg-tn-gold text-tn-white font-serif text-[0.9em] md:text-[1.05em] tracking-[2px] px-[18px] md:px-[22px] py-[11px] rounded-lg no-underline shadow-[0_3px_10px_rgba(239,162,67,0.35)] hover:bg-tn-gold-dark transition-colors whitespace-nowrap"
           >
-            <Phone className="w-4 h-4" /> Call 763-280-1694
+            <Phone className="w-4 h-4 shrink-0" /> <span className="hidden sm:inline">Call</span> 763-280-1694
           </a>
           <button
             onClick={() => document.getElementById("calculator")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-            className="inline-flex items-center gap-[7px] bg-transparent border-2 border-tn-forest text-tn-forest font-serif text-[1.05em] tracking-[2px] px-[22px] py-[11px] rounded-lg cursor-pointer hover:bg-tn-forest hover:text-tn-white transition-all"
+            className="inline-flex items-center gap-[7px] bg-transparent border-2 border-tn-forest text-tn-forest font-serif text-[0.9em] md:text-[1.05em] tracking-[2px] px-[18px] md:px-[22px] py-[11px] rounded-lg cursor-pointer hover:bg-tn-forest hover:text-tn-white transition-all whitespace-nowrap"
           >
-            <RotateCcw className="w-4 h-4" /> New Quote
+            <RotateCcw className="w-4 h-4 shrink-0" /> <span className="hidden sm:inline">New</span> Quote
           </button>
         </div>
 
@@ -180,23 +198,27 @@ export function BookingForm() {
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-[18px] mb-[18px] max-sm:grid-cols-1">
           <div>
-            <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">First Name *</label>
-            <input type="text" value={fname} onChange={(e) => setFname(e.target.value)} placeholder="John" className={inputCls("fname")} />
+            <label htmlFor="fname" id={getLabelId("fname")} className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">First Name *</label>
+            <input id="fname" type="text" value={fname} onChange={(e) => setFname(e.target.value)} placeholder="John" className={inputCls("fname")} aria-labelledby={getLabelId("fname")} aria-describedby={getErrorId("fname")} />
+            {invalidFields.has("fname") && <div id="error-fname" className="text-[0.75em] text-tn-error font-bold mt-1">Required field</div>}
           </div>
           <div>
-            <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Last Name *</label>
-            <input type="text" value={lname} onChange={(e) => setLname(e.target.value)} placeholder="Doe" className={inputCls("lname")} />
+            <label htmlFor="lname" id={getLabelId("lname")} className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Last Name *</label>
+            <input id="lname" type="text" value={lname} onChange={(e) => setLname(e.target.value)} placeholder="Doe" className={inputCls("lname")} aria-labelledby={getLabelId("lname")} aria-describedby={getErrorId("lname")} />
+            {invalidFields.has("lname") && <div id="error-lname" className="text-[0.75em] text-tn-error font-bold mt-1">Required field</div>}
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-[18px] mb-[18px] max-sm:grid-cols-1">
           <div>
-            <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Email Address *</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="jane@email.com" className={inputCls("email")} />
+            <label htmlFor="email" id={getLabelId("email")} className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Email Address *</label>
+            <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="jane@email.com" className={inputCls("email")} aria-labelledby={getLabelId("email")} aria-describedby={getErrorId("email")} />
+            {invalidFields.has("email") && <div id="error-email" className="text-[0.75em] text-tn-error font-bold mt-1">Valid email required</div>}
           </div>
           <div>
-            <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Phone Number *</label>
-            <input type="tel" value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} placeholder="(763) 123-4567" maxLength={14} className={inputCls("phone")} />
+            <label htmlFor="phone" id={getLabelId("phone")} className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Phone Number *</label>
+            <input id="phone" type="tel" value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} placeholder="(763) 123-4567" maxLength={14} className={inputCls("phone")} aria-labelledby={getLabelId("phone")} aria-describedby={getErrorId("phone")} />
+            {invalidFields.has("phone") && <div id="error-phone" className="text-[0.75em] text-tn-error font-bold mt-1">Valid 7+ digit number required</div>}
           </div>
         </div>
 
@@ -238,50 +260,57 @@ export function BookingForm() {
         </div>
 
         <div className="mb-[18px]">
-          <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Preferred Contact Method *</label>
-          <div className="flex gap-[18px] flex-wrap mt-[6px]">
-            {[
-              { value: "phone", label: "📞 Phone Call" },
-              { value: "text", label: "💬 Text Message" },
-              { value: "email", label: "📧 Email" },
-            ].map((opt) => (
-              <label key={opt.value} className="flex items-center gap-2 text-[0.88em] cursor-pointer">
-                <input
-                  type="radio"
-                  name="contactPref"
-                  value={opt.value}
-                  checked={contactPref === opt.value}
-                  onChange={(e) => setContactPref(e.target.value)}
-                  className="accent-tn-field"
-                />
-                {opt.label}
-              </label>
-            ))}
-          </div>
+          <fieldset>
+            <legend className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Preferred Contact Method *</legend>
+            <div className="flex gap-[18px] flex-wrap mt-[6px]">
+              {[
+                { value: "phone", label: "📞 Phone Call" },
+                { value: "text", label: "💬 Text Message" },
+                { value: "email", label: "📧 Email" },
+              ].map((opt) => (
+                <label key={opt.value} className="flex items-center gap-2 text-[0.88em] cursor-pointer">
+                  <input
+                    type="radio"
+                    name="contactPref"
+                    value={opt.value}
+                    checked={contactPref === opt.value}
+                    onChange={(e) => setContactPref(e.target.value)}
+                    className="accent-tn-field"
+                    aria-label={`Prefer to be contacted by ${opt.label.replace(/[📞💬📧]/g, '').trim()}`}
+                  />
+                  {opt.label}
+                </label>
+              ))}
+            </div>
+            {invalidFields.has("contactPref") && <div id="error-contactPref" className="text-[0.75em] text-tn-error font-bold mt-1">Required field</div>}
+          </fieldset>
         </div>
 
         <div className="mb-0">
           <label className="flex items-start gap-[10px] bg-tn-cream rounded-[7px] p-[14px] text-[0.83em] text-tn-gray cursor-pointer">
             <input
               type="checkbox"
+              id="terms"
               checked={terms}
               onChange={(e) => setTerms(e.target.checked)}
               className="accent-tn-field mt-0.5 shrink-0"
+              aria-label="Agree to contact terms"
             />
-            I agree to be contacted by True North Outdoor Services / True North Enterprises MN regarding my quote and scheduling. This form is a request only and is not a final binding contract.
+            <span>I agree to be contacted by True North Outdoor Services / True North Enterprises MN regarding my quote and scheduling. This form is a request only and is not a final binding contract.</span>
           </label>
+          {invalidFields.has("terms") && <div className="text-[0.75em] text-tn-error font-bold mt-2">You must agree to continue</div>}
         </div>
 
         {errMsg && (
-          <div className="bg-[#fff0f0] border-2 border-tn-error rounded-[7px] px-4 py-3 mt-3 text-[0.83em] text-tn-error font-semibold leading-relaxed">
-            {errMsg}
+          <div className="bg-[#fff0f0] border-2 border-tn-error rounded-[7px] px-4 py-3 mt-3 text-[0.83em] text-tn-error font-semibold leading-relaxed" role="alert">
+            <strong>Error:</strong> {errMsg}
           </div>
         )}
 
         <button
           type="submit"
           disabled={sending}
-          className="w-full mt-[22px] bg-gradient-to-br from-tn-forest to-tn-field text-tn-white border-none cursor-pointer font-serif text-[1.4em] tracking-[3px] uppercase py-[18px] rounded-lg transition-all hover:translate-y-[-2px] hover:shadow-[0_8px_28px_rgba(26,61,10,0.4)] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+          className="w-full mt-[22px] bg-gradient-to-br from-tn-forest to-tn-field text-tn-white border-none cursor-pointer font-serif text-[1.2em] md:text-[1.4em] tracking-[3px] uppercase py-[18px] rounded-lg transition-all hover:translate-y-[-2px] hover:shadow-[0_8px_28px_rgba(26,61,10,0.4)] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
         >
           Submit My Booking Request
         </button>

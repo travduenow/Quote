@@ -32,8 +32,15 @@ export function QuoteCard() {
   async function submitGate() {
     setGateError("")
 
+    // Validate Formspree is configured
+    if (!FORMSPREE_URL) {
+      setGateError("Form submission is not configured. Please check back soon or call 763-280-1694 to book.")
+      return
+    }
+
     if (!gateName.trim()) { setGateError("Please enter your name."); return }
-    if (!gateEmail.trim() || !EMAIL_RE.test(gateEmail)) { setGateError("Please enter a valid email address."); return }
+    if (!gateEmail.trim()) { setGateError("Please enter your email address."); return }
+    if (!EMAIL_RE.test(gateEmail)) { setGateError("Please enter a valid email address."); return }
     if (!gateReferral) { setGateError("Please let us know how you heard about us."); return }
     if (!gateContactPref) { setGateError("Please select a preferred contact method."); return }
 

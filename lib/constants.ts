@@ -86,8 +86,8 @@ export const REFERRAL_OPTIONS = [
   { value: 'Other', label: 'Other' },
 ]
 
-// Formspree URL — replace with actual form ID
-export const FORMSPREE_URL = 'https://formspree.io/f/REPLACE_ME'
+// Formspree URL — configure with your form ID in environment variables
+export const FORMSPREE_URL = process.env.NEXT_PUBLIC_FORMSPREE_URL || ''
 
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
