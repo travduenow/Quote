@@ -178,28 +178,6 @@ export const QuoteWizard = memo(function QuoteWizard() {
                   Single service • Pay once • No commitment
                 </span>
               </button>
-
-              {/* Optional: Cash Payment */}
-              <button
-                type="button"
-                onClick={() => setPayMethod("cash")}
-                aria-pressed={payMethod === "cash"}
-                className={`text-left px-6 py-5 border-2 rounded-lg cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tn-gold ${
-                  payMethod === "cash"
-                    ? "bg-tn-forest border-tn-forest text-tn-gold"
-                    : "bg-tn-cream border-tn-border hover:border-tn-lime"
-                }`}
-              >
-                <span className="text-[2em] block mb-2">💵</span>
-                <span className={`block font-serif text-[1.2em] tracking-[1px] font-bold ${payMethod === "cash" ? "text-tn-gold" : "text-tn-charcoal"}`}>
-                  Cash Payment Option
-                </span>
-                <span className={`block text-[0.85em] font-semibold mt-1 leading-relaxed ${
-                  payMethod === "cash" ? "text-white/70" : "text-tn-lgray"
-                }`}>
-                  Full payment upfront • No credit card fees
-                </span>
-              </button>
             </div>
           </div>
         )}
