@@ -5,6 +5,7 @@ import { QuoteCalculator } from "@/components/quote-calculator"
 import { QuoteCard } from "@/components/quote-card"
 import { BookingSection } from "@/components/booking-section"
 import { StickyMobileBar } from "@/components/sticky-mobile-bar"
+import { QuoteHistory } from "@/components/quote-history"
 
 export function CalculatorSection() {
   return (
@@ -23,6 +24,10 @@ export function CalculatorSection() {
           <p className="text-center text-tn-gray text-[0.95em] mb-11">
             Pick your lot size, optional add-ons, and payment to see your personalized price.
           </p>
+
+          <div className="mb-8">
+            <QuoteHistory />
+          </div>
 
           <div className="grid grid-cols-[1fr_400px] gap-10 items-start max-lg:grid-cols-1">
             <QuoteCalculator />

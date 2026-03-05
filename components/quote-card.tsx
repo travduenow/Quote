@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { memo, useState } from "react"
 import { useQuote } from "@/lib/quote-context"
 import {
   fmt, LOT_LABELS, PAY_LABELS, SUB_MOWING, WEEKS, SUB_DISC_RATE, CARD_FEE_RATE,
   EMAIL_RE, FORMSPREE_URL, REFERRAL_OPTIONS, DEADLINE,
 } from "@/lib/constants"
 import { Printer } from "lucide-react"
+import { saveQuote } from "@/lib/quote-history"
 
 function formatPhone(value: string): string {
   let v = value.replace(/\D/g, "").slice(0, 10)
@@ -16,16 +17,17 @@ function formatPhone(value: string): string {
   return v
 }
 
-export function QuoteCard() {
+export const QuoteCard = memo(function QuoteCard() {
   const {
     quoteData, quoteUnlocked, setQuoteUnlocked, payMethod, setPayMethod,
     gateName, setGateName, gateEmail, setGateEmail,
     gatePhone, setGatePhone, gateReferral, setGateReferral,
-    gateContactPref, setGateContactPref, calcQuote,
+    gateContactPref, setGateContactPref, calcQuote, isCalculating,
   } = useQuote()
 
   const [gateError, setGateError] = useState("")
   const [gateSending, setGateSending] = useState(false)
+  const [savedMessage, setSavedMessage] = useState("")
 
   const d = quoteData
 
@@ -76,6 +78,13 @@ export function QuoteCard() {
     document.getElementById("booking")?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
 
+  function handleSaveQuote() {
+    if (!d) return
+    saveQuote(d)
+    setSavedMessage("Quote saved!")
+    setTimeout(() => setSavedMessage(""), 3000)
+  }
+
   // Empty state
   if (!d) {
     return (
@@ -85,11 +94,16 @@ export function QuoteCard() {
           <p className="text-[0.8em] text-white/65">True North Outdoor Services &middot; BookTrueNorth.com</p>
         </div>
         <div className="p-6">
-          <div className="py-9 px-4 text-center text-tn-lgray">
+          <div className="py-9 px-4 text-center">
             <div className="text-[2.8em] opacity-35 mb-[10px]">🌿</div>
-            <p className="text-[0.85em] leading-relaxed">
+            <p className="text-[0.85em] leading-relaxed text-tn-lgray">
               Select lot size, add-ons &amp; payment above to see your quote.
             </p>
+            <div className="mt-6 flex gap-2 justify-center">
+              <div className="h-3 w-3 rounded-full bg-tn-stone/30 animate-pulse" />
+              <div className="h-3 w-3 rounded-full bg-tn-stone/30 animate-pulse" style={{ animationDelay: "0.1s" }} />
+              <div className="h-3 w-3 rounded-full bg-tn-stone/30 animate-pulse" style={{ animationDelay: "0.2s" }} />
+            </div>
           </div>
         </div>
       </div>
@@ -106,14 +120,29 @@ export function QuoteCard() {
         </div>
         <div className="px-5 py-7 text-center">
           <div className="text-[2em] mb-2">🌿</div>
-          <div className="inline-block bg-tn-forest text-tn-gold font-serif text-[1.55em] tracking-[3px] px-[22px] py-2 rounded-lg blur-[7px] select-none pointer-events-none mb-3">
-            {d.isSub ? fmt(d.weeklyPayment ?? 0) + "/wk" : fmt(d.total) + " total"}
-          </div>
-          <div className="font-serif text-[1.5em] tracking-[2px] text-tn-forest mb-[6px]">Almost There!</div>
-          <p className="text-[0.9em] text-tn-gray mb-[6px] leading-relaxed">
-            Your personalized price is calculated and ready.<br />
-            Enter your info below and {"we'll"} send it straight to your inbox — <strong className="text-tn-forest">no commitment required.</strong>
-          </p>
+          {isCalculating ? (
+            <div className="space-y-4">
+              <div className="inline-block bg-tn-forest/10 rounded-lg px-6 py-4 w-full">
+                <div className="flex gap-2 justify-center mb-3">
+                  <div className="h-2 w-12 rounded-full bg-tn-stone/30 animate-pulse" />
+                  <div className="h-2 w-12 rounded-full bg-tn-stone/30 animate-pulse" style={{ animationDelay: "0.1s" }} />
+                  <div className="h-2 w-12 rounded-full bg-tn-stone/30 animate-pulse" style={{ animationDelay: "0.2s" }} />
+                </div>
+                <div className="text-[0.85em] text-tn-gray font-medium">Calculating your price...</div>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="inline-block bg-tn-forest text-tn-gold font-serif text-[1.55em] tracking-[3px] px-[22px] py-2 rounded-lg blur-[7px] select-none pointer-events-none mb-3">
+                {d.isSub ? fmt(d.weeklyPayment ?? 0) + "/wk" : fmt(d.total) + " total"}
+              </div>
+              <div className="font-serif text-[1.5em] tracking-[2px] text-tn-forest mb-[6px]">Almost There!</div>
+              <p className="text-[0.9em] text-tn-gray mb-[6px] leading-relaxed">
+                Your personalized price is calculated and ready.<br />
+                Enter your info below and {"we'll"} send it straight to your inbox — <strong className="text-tn-forest">no commitment required.</strong>
+              </p>
+            </>
+          )}
           <p className="text-[0.8em] text-tn-lgray mb-5">
             🔒 Your info stays private. {"We're"} a small local crew — not a call center.
           </p>
@@ -175,7 +204,7 @@ export function QuoteCard() {
             )}
             <button
               onClick={submitGate}
-              disabled={gateSending}
+              disabled={gateSending || isCalculating}
               className="w-full bg-tn-gold text-tn-forest font-serif text-[1.15em] tracking-[2px] uppercase py-[14px] border-none rounded-md cursor-pointer transition-all hover:translate-y-[-2px] hover:shadow-[0_6px_20px_rgba(232,185,35,0.45)] hover:bg-[#f5c842] disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {gateSending ? "Sending..." : "Show Me My Price"}
@@ -209,7 +238,7 @@ export function QuoteCard() {
   }
 
   return (
-    <div className="rounded-xl overflow-hidden shadow-[var(--shadow-md)] bg-tn-white sticky top-5 animate-fade-up" style={{ animationDelay: "0.12s" }}>
+    <div className="rounded-xl overflow-hidden shadow-[var(--shadow-md)] bg-tn-white sticky top-5 animate-fade-up" style={{ animationDelay: "0.12s" }} role="region" aria-live="polite" aria-label="Quote summary">
       <div className="bg-gradient-to-br from-tn-forest to-tn-green px-[26px] py-6 text-center pb-4">
         <h3 className="font-serif text-[1.7em] tracking-[2.5px] text-tn-white uppercase mb-[3px]">Your Quote</h3>
         <p className="text-[0.8em] text-white/65">True North Outdoor Services &middot; BookTrueNorth.com</p>
@@ -371,7 +400,22 @@ export function QuoteCard() {
           <Printer className="w-4 h-4" />
           Print / Save Quote as PDF
         </button>
+
+        {/* Save quote button */}
+        <button
+          type="button"
+          onClick={handleSaveQuote}
+          className="flex items-center justify-center gap-2 w-full mt-[9px] bg-transparent border-2 border-tn-gold text-tn-gold font-sans font-bold text-[0.8em] tracking-[1px] uppercase py-[10px] rounded-md cursor-pointer transition-all hover:border-tn-gold-dark hover:text-tn-gold-dark hover:bg-[#fff8e8]"
+        >
+          💾 Save This Quote
+        </button>
+
+        {savedMessage && (
+          <div className="text-center text-[0.8em] text-tn-field font-semibold mt-2 animate-pulse">
+            {savedMessage}
+          </div>
+        )}
       </div>
     </div>
   )
-}
+})

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, type FormEvent } from "react"
+import { memo, useState, useRef, type FormEvent } from "react"
 import { useQuote } from "@/lib/quote-context"
 import {
   fmt, LOT_LABELS, PAY_LABELS, EMAIL_RE, FORMSPREE_URL, isAfterDeadline,
@@ -15,7 +15,7 @@ function formatPhone(value: string): string {
   return v
 }
 
-export function BookingForm() {
+export const BookingForm = memo(function BookingForm() {
   const { quoteData, gateName, gateEmail, gatePhone, gateReferral, gateContactPref } = useQuote()
 
   const [fname, setFname] = useState(gateName.split(" ")[0] || "")
@@ -177,15 +177,28 @@ export function BookingForm() {
         </div>
       )}
 
+      {/* Form Progress */}
+      <div className="mb-6 px-4 py-3 bg-tn-cream rounded-lg">
+        <div className="flex items-center justify-between text-[0.75em] font-black tracking-[1.5px] uppercase text-tn-forest mb-2">
+          <span>Booking Form Progress</span>
+          <span className="text-tn-gold">~60% Complete</span>
+        </div>
+        <div className="w-full h-2 bg-tn-stone rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-tn-gold to-tn-field w-3/5 transition-all" />
+        </div>
+      </div>
+
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-[18px] mb-[18px] max-sm:grid-cols-1">
           <div>
             <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">First Name *</label>
             <input type="text" value={fname} onChange={(e) => setFname(e.target.value)} placeholder="John" className={inputCls("fname")} />
+            {invalidFields.has("fname") && <p className="text-[0.7em] text-tn-error font-semibold mt-1">Required</p>}
           </div>
           <div>
             <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Last Name *</label>
             <input type="text" value={lname} onChange={(e) => setLname(e.target.value)} placeholder="Doe" className={inputCls("lname")} />
+            {invalidFields.has("lname") && <p className="text-[0.7em] text-tn-error font-semibold mt-1">Required</p>}
           </div>
         </div>
 
@@ -193,30 +206,36 @@ export function BookingForm() {
           <div>
             <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Email Address *</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="jane@email.com" className={inputCls("email")} />
+            {invalidFields.has("email") && <p className="text-[0.7em] text-tn-error font-semibold mt-1">Valid email required</p>}
           </div>
           <div>
             <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Phone Number *</label>
             <input type="tel" value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} placeholder="(763) 123-4567" maxLength={14} className={inputCls("phone")} />
+            {invalidFields.has("phone") && <p className="text-[0.7em] text-tn-error font-semibold mt-1">Valid phone required</p>}
           </div>
         </div>
 
         <div className="mb-[18px]">
           <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">Street Address *</label>
           <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="123 Main Street" className={inputCls("address")} />
+          {invalidFields.has("address") && <p className="text-[0.7em] text-tn-error font-semibold mt-1">Required</p>}
         </div>
 
         <div className="grid grid-cols-[2fr_1fr_1fr] gap-[18px] mb-[18px] max-sm:grid-cols-1">
           <div>
             <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">City *</label>
             <input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Minneapolis" className={inputCls("city")} />
+            {invalidFields.has("city") && <p className="text-[0.7em] text-tn-error font-semibold mt-1">Required</p>}
           </div>
           <div>
             <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">State *</label>
             <input type="text" value={state} onChange={(e) => setState(e.target.value.toUpperCase())} maxLength={2} className={inputCls("state")} />
+            {invalidFields.has("state") && <p className="text-[0.7em] text-tn-error font-semibold mt-1">Required</p>}
           </div>
           <div>
             <label className="block text-[0.72em] font-black tracking-[2px] uppercase text-tn-forest mb-[6px]">ZIP Code *</label>
             <input type="text" value={zip} onChange={(e) => setZip(e.target.value)} placeholder="55401" maxLength={5} inputMode="numeric" className={inputCls("zip")} />
+            {invalidFields.has("zip") && <p className="text-[0.7em] text-tn-error font-semibold mt-1">5 digits</p>}
           </div>
         </div>
 
@@ -288,4 +307,4 @@ export function BookingForm() {
       </form>
     </div>
   )
-}
+})

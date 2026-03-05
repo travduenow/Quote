@@ -23,6 +23,7 @@ interface QuoteContextType {
   setLandscapingNote: (v: string) => void
   quoteData: QuoteData | null
   calcQuote: () => void
+  isCalculating: boolean
   quoteUnlocked: boolean
   setQuoteUnlocked: (v: boolean) => void
   gateName: string
@@ -47,6 +48,7 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
   const [singleStory, setSingleStory] = useState(false)
   const [landscapingNote, setLandscapingNote] = useState("")
   const [quoteData, setQuoteData] = useState<QuoteData | null>(null)
+  const [isCalculating, setIsCalculating] = useState(false)
   const [quoteUnlocked, setQuoteUnlocked] = useState(false)
   const [gateName, setGateName] = useState("")
   const [gateEmail, setGateEmail] = useState("")
@@ -61,67 +63,73 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
   const calcQuote = useCallback(() => {
     if (!lotSize || !payMethod) return
 
-    const deadlinePassed = isAfterDeadline()
-    const useSA = payMethod === "standalone" || deadlinePassed
-    const isSub = !useSA
+    setIsCalculating(true)
+    
+    // Simulate calculation delay for smooth loading state
+    setTimeout(() => {
+      const deadlinePassed = isAfterDeadline()
+      const useSA = payMethod === "standalone" || deadlinePassed
+      const isSub = !useSA
 
-    const weeklyMow = useSA ? SA_MOWING[lotSize] : SUB_MOWING[lotSize]
-    const mowingTotal = isSub ? weeklyMow * WEEKS : weeklyMow
-    const aos: Record<string, number | null> = {}
-    let aosTotal = 0
+      const weeklyMow = useSA ? SA_MOWING[lotSize] : SUB_MOWING[lotSize]
+      const mowingTotal = isSub ? weeklyMow * WEEKS : weeklyMow
+      const aos: Record<string, number | null> = {}
+      let aosTotal = 0
 
-    if (addons.overseeding) aos["🌱 Overseeding (Quote Requested)"] = null
-    if (addons.aeration) aos["🔄 Core Aeration (Quote Requested)"] = null
-    if (addons.dethatching) aos["🪚 Dethatching (Quote Requested)"] = null
-    if (addons.weed) aos["🌿 Weed Control (Quote Requested)"] = null
+      if (addons.overseeding) aos["🌱 Overseeding (Quote Requested)"] = null
+      if (addons.aeration) aos["🔄 Core Aeration (Quote Requested)"] = null
+      if (addons.dethatching) aos["🪚 Dethatching (Quote Requested)"] = null
+      if (addons.weed) aos["🌿 Weed Control (Quote Requested)"] = null
 
-    if (addons.shrub) {
-      const n = Math.max(1, shrubCount)
-      const c = AO_RATES.shrub * n
-      aos[`✂️ Shrub Trimming (${n} shrub${n !== 1 ? "s" : ""})`] = c
-      aosTotal += c
-    }
-
-    if (addons.gutter) {
-      if (singleStory) {
-        aos["🍂 Gutter Clean-Out"] = AO_RATES.gutter
-        aosTotal += AO_RATES.gutter
-      } else {
-        aos["🍂 Gutter Clean-Out (Confirm single-story below to include)"] = null
-      }
-    }
-
-    if (addons.dog) {
-      if (isSub) {
-        const c = AO_RATES.dog * WEEKS
-        aos["🐾 Dog Waste Pickup (30 wks, 1 dog)"] = c
+      if (addons.shrub) {
+        const n = Math.max(1, shrubCount)
+        const c = AO_RATES.shrub * n
+        aos[`✂️ Shrub Trimming (${n} shrub${n !== 1 ? "s" : ""})`] = c
         aosTotal += c
-      } else {
-        aos["🐾 Dog Waste Pickup (Compass Care only)"] = null
       }
-    }
 
-    if (addons.edging) aos["📐 Edging (Quote Requested)"] = null
-    if (addons.landscaping) {
-      const note = landscapingNote.trim()
-      aos[`🌳 General Landscaping (Quote Requested)${note ? ": " + note : ""}`] = null
-    }
-    if (addons.snow) aos["❄️ Snow Removal (Separate Winter Subscription — Quote Requested)"] = null
+      if (addons.gutter) {
+        if (singleStory) {
+          aos["🍂 Gutter Clean-Out"] = AO_RATES.gutter
+          aosTotal += AO_RATES.gutter
+        } else {
+          aos["🍂 Gutter Clean-Out (Confirm single-story below to include)"] = null
+        }
+      }
 
-    const subtotal = mowingTotal + aosTotal
-    const discount = isSub ? subtotal * SUB_DISC_RATE : 0
-    const afterDisc = subtotal - discount
-    const cardFee = payMethod === "card" ? afterDisc * CARD_FEE_RATE : 0
-    const total = afterDisc + cardFee
-    const weeklyPayment = isSub ? total / WEEKS : null
+      if (addons.dog) {
+        if (isSub) {
+          const c = AO_RATES.dog * WEEKS
+          aos["🐾 Dog Waste Pickup (30 wks, 1 dog)"] = c
+          aosTotal += c
+        } else {
+          aos["🐾 Dog Waste Pickup (Compass Care only)"] = null
+        }
+      }
 
-    const data: QuoteData = {
-      lot: lotSize, pay: payMethod, isSub, useSA, deadlinePassed,
-      weeklyMow, mowingTotal, aos, aosTotal, subtotal, discount,
-      afterDisc, cardFee, total, weeklyPayment,
-    }
+      if (addons.edging) aos["📐 Edging (Quote Requested)"] = null
+      if (addons.landscaping) {
+        const note = landscapingNote.trim()
+        aos[`🌳 General Landscaping (Quote Requested)${note ? ": " + note : ""}`] = null
+      }
+      if (addons.snow) aos["❄️ Snow Removal (Separate Winter Subscription — Quote Requested)"] = null
 
-    setQuoteData(data)
+      const subtotal = mowingTotal + aosTotal
+      const discount = isSub ? subtotal * SUB_DISC_RATE : 0
+      const afterDisc = subtotal - discount
+      const cardFee = payMethod === "card" ? afterDisc * CARD_FEE_RATE : 0
+      const total = afterDisc + cardFee
+      const weeklyPayment = isSub ? total / WEEKS : null
+
+      const data: QuoteData = {
+        lot: lotSize, pay: payMethod, isSub, useSA, deadlinePassed,
+        weeklyMow, mowingTotal, aos, aosTotal, subtotal, discount,
+        afterDisc, cardFee, total, weeklyPayment,
+      }
+
+      setQuoteData(data)
+      setIsCalculating(false)
+    }, 300)
   }, [lotSize, payMethod, addons, shrubCount, singleStory, landscapingNote])
 
   return (
@@ -129,7 +137,7 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
       lotSize, setLotSize, payMethod, setPayMethod,
       addons, toggleAddon, shrubCount, setShrubCount,
       singleStory, setSingleStory, landscapingNote, setLandscapingNote,
-      quoteData, calcQuote, quoteUnlocked, setQuoteUnlocked,
+      quoteData, calcQuote, isCalculating, quoteUnlocked, setQuoteUnlocked,
       gateName, setGateName, gateEmail, setGateEmail,
       gatePhone, setGatePhone, gateReferral, setGateReferral,
       gateContactPref, setGateContactPref,

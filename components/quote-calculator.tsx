@@ -1,10 +1,11 @@
 "use client"
 
+import { memo } from "react"
 import { useQuote } from "@/lib/quote-context"
 import { LOT_OPTIONS, ADDON_OPTIONS } from "@/lib/constants"
 import { Calculator, Zap } from "lucide-react"
 
-export function QuoteCalculator() {
+export const QuoteCalculator = memo(function QuoteCalculator() {
   const {
     lotSize, setLotSize, payMethod, setPayMethod,
     addons, toggleAddon, shrubCount, setShrubCount,
@@ -19,7 +20,7 @@ export function QuoteCalculator() {
         <div className="w-11 h-11 bg-tn-gold rounded-lg flex items-center justify-center text-tn-forest shrink-0">
           <Calculator className="w-5 h-5" />
         </div>
-        <div>
+        <div className="flex-1">
           <h2 className="font-serif text-[1.7em] tracking-[2px] text-tn-white uppercase">
             Build Your Quote
           </h2>
@@ -29,13 +30,26 @@ export function QuoteCalculator() {
         </div>
       </div>
 
+      {/* Progress indicator */}
+      <div className="px-[30px] pt-6 pb-0">
+        <div className="flex items-center gap-2 justify-center mb-6">
+          <div className="flex-1 h-1.5 bg-tn-gold rounded-full" />
+          <span className="text-[0.65em] font-black tracking-[2px] uppercase text-tn-forest bg-tn-gold px-2 py-1 rounded">Step 1/3</span>
+          <div className="flex-1 h-1.5 bg-tn-stone/40 rounded-full" />
+          <span className="text-[0.65em] font-black tracking-[2px] uppercase text-tn-lgray bg-tn-cream px-2 py-1 rounded">Step 2/3</span>
+          <div className="flex-1 h-1.5 bg-tn-stone/40 rounded-full" />
+          <span className="text-[0.65em] font-black tracking-[2px] uppercase text-tn-lgray bg-tn-cream px-2 py-1 rounded">Step 3/3</span>
+          <div className="flex-1 h-1.5 bg-tn-stone/40 rounded-full" />
+        </div>
+      </div>
+
       <div className="p-[30px]">
         {/* LOT SIZE */}
         <div className="mb-7">
           <label className="block text-[0.72em] font-black tracking-[2.5px] uppercase text-tn-forest mb-3 pb-[6px] border-b-2 border-tn-stone">
             1. Select Your Lot Size
           </label>
-          <div className="grid grid-cols-3 gap-[9px] max-md:grid-cols-2 max-sm:grid-cols-1">
+          <div className="grid grid-cols-3 gap-[9px] max-md:grid-cols-2 max-sm:grid-cols-1" role="group" aria-label="Lot size options">
             {LOT_OPTIONS.map((opt) => {
               const isSelected = lotSize === opt.value
               return (
@@ -43,7 +57,9 @@ export function QuoteCalculator() {
                   key={opt.value}
                   type="button"
                   onClick={() => setLotSize(opt.value)}
-                  className={`px-2 py-[13px] text-center border-2 rounded-lg transition-all cursor-pointer ${
+                  aria-pressed={isSelected}
+                  aria-label={`${opt.label}: ${opt.sub}`}
+                  className={`px-2 py-[13px] text-center border-2 rounded-lg transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tn-gold ${
                     isSelected
                       ? "border-tn-gold bg-tn-forest"
                       : "border-tn-border bg-tn-cream hover:border-tn-lime hover:bg-[#f0f8e8]"
@@ -70,11 +86,11 @@ export function QuoteCalculator() {
           <label className="block text-[0.72em] font-black tracking-[2.5px] uppercase text-tn-forest mb-3 pb-[6px] border-b-2 border-tn-stone">
             2. Optional Add-On Services
           </label>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2" role="group" aria-label="Add-on services">
             {ADDON_OPTIONS.map((ao) => (
               <div key={ao.id}>
                 <div
-                  className={`flex items-start gap-3 px-[14px] py-3 rounded-lg border-2 cursor-pointer select-none transition-all ${
+                  className={`flex items-start gap-3 px-[14px] py-3 rounded-lg border-2 cursor-pointer select-none transition-all focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-tn-gold ${
                     addons[ao.id]
                       ? "border-tn-field bg-[#edf7dd]"
                       : "border-tn-border bg-tn-cream hover:border-tn-lime hover:bg-[#f3fae8]"
@@ -85,6 +101,7 @@ export function QuoteCalculator() {
                     type="checkbox"
                     checked={!!addons[ao.id]}
                     readOnly
+                    aria-label={ao.label}
                     className="w-[17px] h-[17px] mt-0.5 shrink-0 cursor-pointer accent-tn-field pointer-events-none"
                   />
                   <div>
@@ -152,7 +169,7 @@ export function QuoteCalculator() {
           <label className="block text-[0.72em] font-black tracking-[2.5px] uppercase text-tn-forest mb-3 pb-[6px] border-b-2 border-tn-stone">
             3. Payment Method
           </label>
-          <div className="grid grid-cols-3 gap-[9px] max-sm:grid-cols-1">
+          <div className="grid grid-cols-3 gap-[9px] max-sm:grid-cols-1" role="group" aria-label="Payment method options">
             {[
               { value: "card", icon: "💳", name: "Card", desc: "Billed weekly\n+3% service fee" },
               { value: "cash", icon: "💵", name: "Cash", desc: "Paid in full\nupfront · no fee" },
@@ -164,7 +181,9 @@ export function QuoteCalculator() {
                   key={opt.value}
                   type="button"
                   onClick={() => setPayMethod(opt.value)}
-                  className={`text-center px-2 py-[14px] border-2 rounded-lg cursor-pointer transition-all ${
+                  aria-pressed={isSelected}
+                  aria-label={`${opt.name}: ${opt.desc.replace(/\n/g, " ")}`}
+                  className={`text-center px-2 py-[14px] border-2 rounded-lg cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tn-gold ${
                     isSelected
                       ? "bg-tn-forest border-tn-forest text-tn-gold"
                       : "bg-tn-cream border-tn-border hover:border-tn-lime"
@@ -193,4 +212,4 @@ export function QuoteCalculator() {
       </div>
     </div>
   )
-}
+})
